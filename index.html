@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f8fc" />
+  <title>INDUSIA — Tu empresa, con inteligencia propia.</title>
+  <meta name="description" content="Agentes de IA, automatizaciones y software a medida para empresas." />
+  <style>
+    :root{
+      --bg:#f6f8fc;
+      --surface:#ffffff;
+      --ink:#091225;
+      --muted:#637083;
+      --line:#dfe6ef;
+      --blue:#286cff;
+      --cyan:#42c7ff;
+      --violet:#6b5cff;
+      --dark:#07101f;
+      --dark2:#0b1630;
+      --radius:28px;
+      --shadow:0 24px 80px rgba(13,28,54,.10);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 78% 8%, rgba(66,199,255,.18), transparent 24rem),
+        radial-gradient(circle at 12% 2%, rgba(40,108,255,.10), transparent 20rem),
+        var(--bg);
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    button,input,textarea,select{font:inherit}
+    .shell{width:min(1200px,calc(100% - 40px));margin:auto}
+    .nav{
+      position:sticky;top:14px;z-index:30;
+      margin:14px auto 0;
+      width:min(1200px,calc(100% - 28px));
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px 12px 18px;border:1px solid rgba(255,255,255,.7);
+      border-radius:20px;background:rgba(255,255,255,.74);
+      backdrop-filter:blur(18px);
+      box-shadow:0 10px 40px rgba(14,34,70,.07);
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:750;letter-spacing:.18em}
+    .brand svg{width:40px;height:34px}
+    .navlinks{display:flex;gap:26px;font-size:13px;color:#303a4b}
+    .navlinks a{transition:.2s}
+    .navlinks a:hover{color:var(--blue)}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;gap:10px;
+      border-radius:999px;padding:12px 18px;border:1px solid var(--line);
+      background:white;font-weight:650;font-size:14px;
+      transition:.25s transform,.25s box-shadow,.25s background;
+      cursor:pointer;
+    }
+    .pill:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(28,72,154,.12)}
+    .pill.primary{background:linear-gradient(135deg,var(--blue),#487dff);color:white;border-color:transparent;box-shadow:0 12px 30px rgba(40,108,255,.23)}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:700;
+      text-transform:uppercase;letter-spacing:.16em;color:#1f4fab;
+    }
+    .eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 5px rgba(40,108,255,.09)}
+    .hero{
+      min-height:770px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:40px;
+      padding:78px 0 70px;position:relative;
+    }
+    .hero h1{
+      font-size:clamp(56px,7.3vw,108px);line-height:.91;letter-spacing:-.065em;
+      margin:22px 0 26px;font-weight:760;max-width:760px;
+    }
+    .hero h1 .accent{
+      background:linear-gradient(90deg,var(--blue),var(--cyan),var(--violet));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .hero p{font-size:18px;line-height:1.65;color:var(--muted);max-width:620px;margin:0 0 30px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    .hero-visual{position:relative;min-height:570px;display:grid;place-items:center}
+    .orbital{
+      position:absolute;width:520px;height:520px;border-radius:50%;
+      background:
+        radial-gradient(circle at 48% 48%,rgba(40,108,255,.10) 0 3%,transparent 4%),
+        radial-gradient(circle at center,rgba(66,199,255,.18),transparent 55%);
+      border:1px solid rgba(60,115,220,.11);
+      animation:breath 5s ease-in-out infinite;
+    }
+    .ring,.ring2{
+      position:absolute;width:440px;height:440px;border-radius:50%;border:1px solid rgba(49,113,255,.19);
+      transform:rotateX(68deg) rotateZ(-18deg);animation:spin 18s linear infinite;
+    }
+    .ring2{width:330px;height:330px;transform:rotateY(70deg) rotateZ(15deg);animation-duration:14s;animation-direction:reverse}
+    .logo-cloud{
+      width:min(430px,90%);filter:drop-shadow(0 30px 50px rgba(35,91,201,.22));
+      transform-style:preserve-3d;
+      transition:transform .2s ease-out;
+      z-index:3;
+    }
+    .float-chip{
+      position:absolute;z-index:5;background:rgba(255,255,255,.83);border:1px solid rgba(74,114,181,.12);
+      box-shadow:0 14px 35px rgba(31,75,148,.11);border-radius:14px;padding:10px 13px;
+      font-size:12px;font-weight:700;color:#364258;backdrop-filter:blur(10px);
+      animation:float 4s ease-in-out infinite;
+    }
+    .c1{top:82px;left:5%;animation-delay:-1s}.c2{top:160px;right:1%;animation-delay:-2.1s}.c3{bottom:92px;left:7%;animation-delay:-2.9s}.c4{bottom:64px;right:8%;animation-delay:-.4s}
+    .trusted{
+      grid-column:1/-1;margin-top:16px;border-top:1px solid var(--line);padding-top:25px;
+      display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;
+      color:#8c96a5;font-size:12px;text-transform:uppercase;letter-spacing:.14em;
+    }
+    .trusted .words{display:flex;gap:28px;flex-wrap:wrap;font-weight:700;color:#9ba5b3}
+    section{padding:100px 0}
+    .section-head{display:flex;justify-content:space-between;gap:30px;align-items:flex-end;margin-bottom:42px}
+    .section-head h2{font-size:clamp(38px,5vw,72px);line-height:.98;letter-spacing:-.045em;margin:12px 0 0;max-width:840px}
+    .section-head p{max-width:460px;color:var(--muted);line-height:1.7;margin:0}
+    .connect{
+      background:rgba(255,255,255,.72);border:1px solid rgba(198,210,226,.75);
+      border-radius:36px;padding:38px;box-shadow:var(--shadow);overflow:hidden;
+    }
+    .connect-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:42px;align-items:center}
+    .connect-copy h3{font-size:44px;letter-spacing:-.04em;line-height:1.02;margin:0 0 18px}
+    .connect-copy h3 span{color:var(--blue)}
+    .connect-copy p{color:var(--muted);line-height:1.65}
+    .network{position:relative;min-height:410px}
+    .network-center{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:128px;height:128px;border-radius:28px;background:linear-gradient(145deg,#fff,#edf4ff);
+      border:1px solid #d9e6fb;box-shadow:0 25px 60px rgba(40,108,255,.18);
+      display:grid;place-items:center;z-index:4;font-weight:800;letter-spacing:.16em;
+    }
+    .network-center b{color:var(--blue)}
+    .node{
+      position:absolute;padding:10px 13px;border-radius:13px;background:white;border:1px solid #dbe5f1;
+      box-shadow:0 9px 25px rgba(29,58,103,.07);font-size:12px;font-weight:700;
+    }
+    .n1{left:6%;top:14%}.n2{right:7%;top:10%}.n3{left:0;top:47%}.n4{right:0;top:44%}.n5{left:10%;bottom:12%}.n6{right:11%;bottom:12%}.n7{left:42%;top:2%}.n8{left:43%;bottom:1%}
+    .links{position:absolute;inset:0;width:100%;height:100%}
+    .links path{fill:none;stroke:url(#g);stroke-width:1.5;stroke-dasharray:6 7;animation:dash 8s linear infinite}
+    .dark{
+      position:relative;background:
+      radial-gradient(circle at 67% 35%,rgba(71,89,255,.24),transparent 28rem),
+      radial-gradient(circle at 30% 60%,rgba(25,176,255,.16),transparent 30rem),
+      linear-gradient(160deg,#07101f,#081529 65%,#060d19);
+      color:white;border-radius:42px;margin:0 auto;width:min(1320px,calc(100% - 24px));
+      overflow:hidden;
+    }
+    .dark:before{
+      content:"";position:absolute;inset:0;opacity:.2;
+      background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+      background-size:42px 42px;mask-image:linear-gradient(to bottom,transparent,#000,transparent);
+    }
+    .dark .shell{position:relative;z-index:2}
+    .dark h2{font-size:clamp(45px,6vw,84px);line-height:.96;letter-spacing:-.05em;margin:12px 0 20px;max-width:830px}
+    .dark p{color:#acb8cb;max-width:620px;line-height:1.7}
+    .demo{display:grid;grid-template-columns:.75fr 1.25fr;gap:56px;align-items:center}
+    .demo-box{min-height:460px;position:relative}
+    .flow-card{
+      position:absolute;border:1px solid rgba(167,195,255,.19);background:rgba(13,27,53,.68);
+      box-shadow:0 20px 50px rgba(0,0,0,.25);backdrop-filter:blur(12px);border-radius:18px;padding:15px 17px;
+      min-width:150px;
+    }
+    .flow-card strong{display:block;font-size:13px;margin-bottom:5px}
+    .flow-card small{color:#92a3bf}
+    .f1{left:0;top:47%}.f2{left:33%;top:47%}.f3{right:0;top:12%}.f4{right:0;top:38%}.f5{right:0;top:64%}
+    .beam{position:absolute;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--violet),transparent);box-shadow:0 0 22px var(--blue);transform-origin:left}
+    .b1{left:24%;top:54%;width:19%}.b2{left:55%;top:54%;width:32%;transform:rotate(-27deg)}.b3{left:55%;top:54%;width:32%}.b4{left:55%;top:54%;width:32%;transform:rotate(27deg)}
+    .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{
+      padding:26px;border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.76);
+      min-height:280px;transition:.3s transform,.3s box-shadow,.3s border-color;position:relative;overflow:hidden;
+    }
+    .card:hover{transform:translateY(-7px);box-shadow:var(--shadow);border-color:#c3d3ee}
+    .card .icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(145deg,#e9f2ff,#fff);display:grid;place-items:center;color:var(--blue);font-weight:800;margin-bottom:46px;border:1px solid #d7e7ff}
+    .card h3{font-size:25px;letter-spacing:-.03em;margin:0 0 12px}
+    .card p{color:var(--muted);line-height:1.6;margin:0}
+    .card .num{position:absolute;right:20px;top:18px;color:#a7b1c0;font-size:12px}
+    .philosophy{
+      display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:35px;
+      padding:55px;border-radius:34px;background:linear-gradient(140deg,#091327,#07101f);color:white;
+      overflow:hidden;position:relative;
+    }
+    .philosophy h3{font-size:clamp(34px,4vw,58px);line-height:1.02;letter-spacing:-.04em;margin:0}
+    .philosophy h3:last-child{text-align:right}
+    .mini-cloud{width:170px;filter:drop-shadow(0 10px 30px rgba(40,108,255,.35))}
+    .process{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+    .step{border-top:1px solid #cfd9e7;padding-top:20px}
+    .step b{font-size:34px;color:#c6d4e8}
+    .step h4{font-size:18px;margin:16px 0 8px}
+    .step p{font-size:14px;line-height:1.55;color:var(--muted)}
+    .contact{
+      display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;background:white;border:1px solid var(--line);
+      border-radius:36px;padding:50px;box-shadow:var(--shadow)
+    }
+    .contact h2{font-size:clamp(42px,5vw,68px);letter-spacing:-.05em;line-height:.98;margin:12px 0 18px}
+    .contact p{color:var(--muted);line-height:1.7}
+    form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    input,textarea,select{
+      width:100%;border:1px solid #dbe3ee;border-radius:14px;padding:14px 15px;background:#fbfcfe;outline:none;
+      transition:.2s border,.2s box-shadow;color:#172033;
+    }
+    input:focus,textarea:focus,select:focus{border-color:#92b7ff;box-shadow:0 0 0 4px rgba(40,108,255,.08)}
+    textarea,select,.full{grid-column:1/-1}
+    textarea{min-height:130px;resize:vertical}
+    .submit{grid-column:1/-1;border:0;padding:15px;border-radius:14px;background:linear-gradient(90deg,var(--blue),#4b7cff);color:white;font-weight:750;cursor:pointer}
+    footer{padding:40px 0 55px;color:#7c8797;font-size:13px}
+    .footer-row{display:flex;justify-content:space-between;gap:30px;align-items:center;border-top:1px solid var(--line);padding-top:26px}
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .75s ease,transform .75s ease}
+    .reveal.show{opacity:1;transform:none}
+    @keyframes spin{to{transform:rotateX(68deg) rotateZ(342deg)}}
+    @keyframes breath{50%{transform:scale(1.035);opacity:.76}}
+    @keyframes float{50%{transform:translateY(-10px)}}
+    @keyframes dash{to{stroke-dashoffset:-130}}
+    @media(max-width:950px){
+      .navlinks{display:none}
+      .hero,.connect-grid,.demo,.contact{grid-template-columns:1fr}
+      .hero{padding-top:54px}.hero-visual{min-height:470px}.orbital{width:390px;height:390px}.ring{width:360px;height:360px}.ring2{width:280px;height:280px}
+      .services-grid{grid-template-columns:1fr 1fr}.process{grid-template-columns:1fr 1fr}.philosophy{grid-template-columns:1fr}.philosophy h3:last-child{text-align:left}.mini-cloud{display:none}
+    }
+    @media(max-width:620px){
+      .shell{width:min(100% - 26px,1200px)}.nav{width:calc(100% - 16px)}
+      .hero{min-height:auto}.hero h1{font-size:55px}.hero p{font-size:16px}.hero-visual{min-height:400px}.logo-cloud{width:340px}
+      .services-grid,.process{grid-template-columns:1fr}.section-head{display:block}.connect,.contact{padding:26px}.philosophy{padding:34px}
+      form{grid-template-columns:1fr}.full,textarea,select,.submit{grid-column:auto}.dark{border-radius:28px}.demo-box{min-height:540px}.f2{left:8%;top:63%}.f3,.f4,.f5{right:2%}
+    }
+
+    .marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.6)}
+    .marquee-track{display:flex;gap:42px;white-space:nowrap;padding:18px 0;animation:marquee 24s linear infinite;font-weight:750;color:#667286;letter-spacing:.08em;font-size:13px}
+    @keyframes marquee{to{transform:translateX(-50%)}}
+    .split-panel{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .panel{border:1px solid var(--line);border-radius:30px;background:white;padding:34px;box-shadow:0 18px 55px rgba(20,50,100,.07)}
+    .panel h3{font-size:32px;letter-spacing:-.04em;margin:0 0 14px}
+    .panel p{color:var(--muted);line-height:1.65}
+    .beforeafter{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:stretch}
+    .ba-box{border-radius:28px;padding:30px;border:1px solid var(--line);background:#fff}
+    .ba-box.darkish{background:#10192b;color:white;border-color:#1b2b49}
+    .ba-box h4{font-size:24px;margin:0 0 20px}
+    .ba-list{display:grid;gap:12px}
+    .ba-item{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+    .ba-item span:first-child{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:#eef4ff;color:var(--blue);font-size:12px;font-weight:800}
+    .darkish .ba-item span:first-child{background:#172a4d;color:#72d9ff}
+    .arrow-big{display:grid;place-items:center;font-size:40px;color:#96a6bd}
+    .sector-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .sector{min-height:190px;border:1px solid var(--line);background:linear-gradient(155deg,#fff,#f4f7fb);border-radius:22px;padding:24px;position:relative;overflow:hidden}
+    .sector:after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(40,108,255,.12),transparent 70%);right:-25px;bottom:-20px}
+    .sector h4{font-size:19px;margin:0 0 10px}.sector p{font-size:13px;line-height:1.55;color:var(--muted)}
+    .cap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .cap{padding:28px;border-radius:24px;background:#0b1426;color:white;border:1px solid #172846;min-height:220px;position:relative;overflow:hidden}
+    .cap:before{content:"";position:absolute;inset:auto -20% -45% 30%;height:160px;background:radial-gradient(circle,rgba(46,111,255,.28),transparent 65%)}
+    .cap small{color:#6ecfff;text-transform:uppercase;letter-spacing:.12em}.cap h3{font-size:28px;margin:12px 0}.cap p{color:#a9b5c8;line-height:1.6}
+    .usecases{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .case{border-radius:24px;border:1px solid var(--line);background:white;padding:24px;min-height:260px;display:flex;flex-direction:column}
+    .case .tag{font-size:11px;color:var(--blue);font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+    .case h3{font-size:24px;margin:14px 0 10px}.case p{color:var(--muted);line-height:1.6}
+    .flowline{margin-top:auto;padding-top:18px;border-top:1px solid #e6ebf2;font-size:12px;color:#607089;font-weight:700}
+    .integrations{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+    .integration{border:1px solid var(--line);background:white;border-radius:18px;padding:18px;text-align:center;font-size:13px;font-weight:700;box-shadow:0 8px 25px rgba(30,55,95,.04)}
+    .labs{border-radius:36px;padding:48px;background:linear-gradient(135deg,#eef5ff,#ffffff 45%,#f3efff);border:1px solid #dbe7fb;display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+    .labs h3{font-size:46px;letter-spacing:-.04em;margin:0 0 15px}.labs p{color:var(--muted);line-height:1.7}
+    .lab-ui{background:#0a1427;border-radius:26px;padding:18px;box-shadow:0 28px 70px rgba(18,42,84,.22)}
+    .lab-ui .bar{height:34px;border-bottom:1px solid #1e3154;display:flex;gap:6px;align-items:flex-start}
+    .dot{width:8px;height:8px;border-radius:50%;background:#4168a5}
+    .lab-content{padding:24px;color:white}
+    .lab-content h4{margin:0 0 14px;font-size:22px}
+    .lab-flow{display:grid;gap:10px}
+    .lab-row{background:#101f3d;border:1px solid #1d3560;border-radius:12px;padding:12px;color:#9fc4ff;font-size:12px}
+    .faq{display:grid;gap:10px}
+    details{border:1px solid var(--line);background:white;border-radius:18px;padding:20px 22px}
+    summary{cursor:pointer;font-weight:750}
+    details p{color:var(--muted);line-height:1.65;margin:14px 0 0}
+    .cta-band{border-radius:32px;background:linear-gradient(110deg,#2468ff,#4e70ff 55%,#6b5cff);color:white;padding:42px;display:flex;justify-content:space-between;gap:30px;align-items:center}
+    .cta-band h3{font-size:40px;line-height:1;letter-spacing:-.04em;margin:0;max-width:700px}
+    .cta-band .pill{background:white}
+    @media(max-width:950px){
+      .split-panel,.beforeafter,.labs{grid-template-columns:1fr}.sector-grid{grid-template-columns:1fr 1fr}.cap-grid{grid-template-columns:1fr}.usecases{grid-template-columns:1fr 1fr}.integrations{grid-template-columns:repeat(3,1fr)}.arrow-big{transform:rotate(90deg)}
+    }
+    @media(max-width:620px){
+      .sector-grid,.usecases,.integrations{grid-template-columns:1fr}.cta-band{display:block}.cta-band .pill{margin-top:20px}
+    }
+
+
+    .more-btn{
+      margin-top:18px;border:0;background:transparent;color:var(--blue);font-weight:750;padding:0;
+      cursor:pointer;display:inline-flex;align-items:center;gap:7px
+    }
+    .more-btn:hover{gap:11px}
+    .client-strip{display:grid;grid-template-columns:1.1fr 2fr;gap:28px;align-items:center;padding:34px;border:1px solid var(--line);background:#fff;border-radius:30px}
+    .client-strip h3{font-size:34px;margin:0 0 12px;letter-spacing:-.04em}
+    .client-strip p{color:var(--muted);line-height:1.6;margin:0}
+    .client-pills{display:flex;gap:10px;flex-wrap:wrap}
+    .client-pill{padding:12px 15px;border-radius:999px;background:#f5f8fd;border:1px solid #e0e7f1;font-size:13px;font-weight:700;color:#455269}
+    .proof-note{margin-top:13px;color:#8a95a5;font-size:12px}
+    .case-feature{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;border-radius:34px;background:linear-gradient(135deg,#0b1529,#101d36);color:white;padding:42px;overflow:hidden}
+    .case-feature h3{font-size:44px;line-height:1;letter-spacing:-.04em;margin:12px 0 18px}
+    .case-feature p{color:#aebbd0;line-height:1.7}
+    .case-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+    .case-meta span{padding:9px 12px;border-radius:999px;border:1px solid #233a61;color:#9fc8ff;font-size:12px}
+    .case-screen{background:#07101f;border:1px solid #1b2c4b;border-radius:24px;padding:18px;box-shadow:0 25px 65px rgba(0,0,0,.28)}
+    .case-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e3154;padding-bottom:12px;color:#8293ae;font-size:11px}
+    .case-flow{display:grid;gap:10px;padding-top:18px}
+    .case-flow div{border:1px solid #1c355f;background:#0d1f3e;border-radius:12px;padding:12px 14px;font-size:12px;color:#bcd0ef}
+    .modal{
+      position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(5,10,20,.55);backdrop-filter:blur(12px)
+    }
+    .modal.open{display:flex}
+    .modal-card{
+      width:min(850px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:28px;padding:32px;
+      box-shadow:0 30px 90px rgba(0,0,0,.25);position:relative
+    }
+    .modal-close{
+      position:absolute;right:18px;top:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
+      background:#fff;cursor:pointer;font-size:20px
+    }
+    .modal-kicker{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+    .modal-card h3{font-size:38px;letter-spacing:-.04em;margin:10px 45px 14px 0}
+    .modal-card>p{color:var(--muted);line-height:1.7}
+    .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+    .modal-box{border:1px solid var(--line);border-radius:18px;padding:18px;background:#fafcff}
+    .modal-box h4{margin:0 0 10px}.modal-box p,.modal-box li{color:#5f6c80;font-size:14px;line-height:1.6}
+    .modal-box ul{padding-left:18px;margin-bottom:0}
+    .project-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .project-card{border:1px solid var(--line);background:white;border-radius:24px;padding:26px;min-height:260px}
+    .project-card .status{font-size:11px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--blue)}
+    .project-card h3{font-size:24px;margin:14px 0 10px}
+    .project-card p{color:var(--muted);line-height:1.6}
+    .project-card.real{border-color:#bcd5ff;box-shadow:0 18px 50px rgba(40,108,255,.08)}
+    @media(max-width:950px){
+      .client-strip,.case-feature{grid-template-columns:1fr}.project-grid{grid-template-columns:1fr 1fr}.modal-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:620px){
+      .project-grid{grid-template-columns:1fr}.case-feature{padding:28px}
+    }
+
+
+    .dense-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .dense-card{background:white;border:1px solid var(--line);border-radius:24px;padding:24px;min-height:210px;position:relative;overflow:hidden}
+    .dense-card h4{font-size:20px;margin:0 0 10px}.dense-card p{font-size:14px;line-height:1.6;color:var(--muted)}
+    .dense-card .mini-flow{margin-top:20px;display:flex;gap:7px;flex-wrap:wrap}
+    .mini-flow span{padding:7px 9px;border-radius:9px;background:#f3f7fd;border:1px solid #e1e9f4;font-size:11px;font-weight:700;color:#536176}
+    .showcase{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:stretch}
+    .showcase-main{border-radius:32px;background:linear-gradient(150deg,#0a1428,#0d1d3a);color:white;padding:34px;min-height:520px;position:relative;overflow:hidden}
+    .showcase-main:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;right:-120px;top:40px;background:radial-gradient(circle,rgba(49,121,255,.34),transparent 65%)}
+    .showcase-main h3{font-size:42px;line-height:1.02;letter-spacing:-.04em;margin:12px 0 18px}
+    .showcase-main p{color:#aebbd0;line-height:1.7;max-width:620px}
+    .dashboard{margin-top:28px;border:1px solid #20385f;background:#081224;border-radius:20px;padding:16px;position:relative;z-index:2}
+    .dash-top{display:flex;gap:7px;border-bottom:1px solid #1a3153;padding-bottom:12px}.dash-dot{width:8px;height:8px;border-radius:50%;background:#3d6199}
+    .dash-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:12px;padding-top:14px}
+    .dash-box{border:1px solid #19335c;background:#0d1d38;border-radius:14px;padding:14px;color:#bcd0ef;font-size:12px;min-height:95px}
+    .dash-box strong{display:block;color:white;margin-bottom:7px}
+    .showcase-side{display:grid;gap:16px}
+    .mini-demo{border:1px solid var(--line);background:white;border-radius:26px;padding:24px;min-height:245px}
+    .mini-demo h4{font-size:22px;margin:0 0 9px}.mini-demo p{color:var(--muted);line-height:1.55;font-size:14px}
+    .wave{height:58px;display:flex;align-items:center;gap:4px;margin:24px 0}
+    .wave i{display:block;width:5px;border-radius:999px;background:linear-gradient(var(--cyan),var(--blue));animation:wave 1.4s ease-in-out infinite}
+    .wave i:nth-child(2n){animation-delay:-.3s}.wave i:nth-child(3n){animation-delay:-.6s}
+    @keyframes wave{0%,100%{height:12px}50%{height:52px}}
+    .chat-preview{display:grid;gap:9px;margin-top:18px}
+    .bubble{max-width:88%;padding:10px 12px;border-radius:14px;font-size:12px;line-height:1.45}
+    .bubble.user{justify-self:end;background:#286cff;color:white}.bubble.bot{background:#eef4ff;color:#33435d}
+    .auto-map{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .auto-item{border:1px solid var(--line);background:white;border-radius:18px;padding:18px;min-height:145px}
+    .auto-item b{display:block;font-size:14px;margin-bottom:7px}.auto-item span{color:var(--muted);font-size:12px;line-height:1.45}
+    .matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .matrix-item{padding:18px;border-radius:18px;background:linear-gradient(145deg,#fff,#f7faff);border:1px solid #dde6f2;min-height:135px}
+    .matrix-item small{color:var(--blue);font-weight:800}.matrix-item h4{margin:8px 0;font-size:17px}.matrix-item p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+    .timeline{display:grid;gap:0;border-left:1px solid #d4deeb;margin-left:12px;padding-left:30px}
+    .timeline-step{position:relative;padding:0 0 34px 0}
+    .timeline-step:before{content:"";position:absolute;left:-37px;top:4px;width:13px;height:13px;border-radius:50%;background:white;border:3px solid var(--blue);box-shadow:0 0 0 5px rgba(40,108,255,.08)}
+    .timeline-step h4{margin:0 0 7px;font-size:18px}.timeline-step p{margin:0;color:var(--muted);line-height:1.6;font-size:14px}
+    .stacked-showcase{display:grid;grid-template-columns:.9fr 1.1fr;gap:28px;align-items:center}
+    .stack-cards{position:relative;min-height:460px}
+    .stack-card{position:absolute;width:72%;left:14%;border-radius:24px;padding:24px;background:white;border:1px solid var(--line);box-shadow:0 28px 70px rgba(25,56,104,.10)}
+    .stack-card:nth-child(1){top:20px;transform:rotate(-4deg)}
+    .stack-card:nth-child(2){top:145px;left:22%;transform:rotate(3deg)}
+    .stack-card:nth-child(3){top:275px;left:10%;transform:rotate(-1deg)}
+    .stack-card h4{margin:0 0 8px}.stack-card p{color:var(--muted);font-size:13px}
+    .stacked-copy h3{font-size:46px;letter-spacing:-.04em;line-height:1.02;margin:10px 0 15px}
+    .stacked-copy p{color:var(--muted);line-height:1.7}
+    @media(max-width:950px){
+      .dense-grid,.auto-map,.matrix{grid-template-columns:1fr 1fr}.showcase,.stacked-showcase{grid-template-columns:1fr}.stack-cards{min-height:430px}
+    }
+    @media(max-width:620px){
+      .dense-grid,.auto-map,.matrix{grid-template-columns:1fr}.dash-grid{grid-template-columns:1fr}.showcase-main{padding:26px}.stack-card{width:88%;left:6%}.stack-card:nth-child(2){left:8%}
+    }
+
+
+    /* V5 motion system */
+    body{cursor:default}
+    .cursor-dot{
+      position:fixed;z-index:9999;width:10px;height:10px;border-radius:50%;pointer-events:none;
+      background:var(--blue);transform:translate(-50%,-50%);
+      box-shadow:0 0 0 8px rgba(40,108,255,.08);transition:width .18s,height .18s,box-shadow .18s,opacity .18s;
+      mix-blend-mode:multiply
+    }
+    .cursor-dot.big{width:18px;height:18px;box-shadow:0 0 0 14px rgba(40,108,255,.08)}
+    .progress-line{
+      position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--cyan),var(--violet));
+      z-index:9998;width:0;box-shadow:0 0 18px rgba(40,108,255,.35)
+    }
+    .hero .word{display:inline-block;will-change:transform,opacity}
+    .hero .line{display:block;overflow:hidden}
+    .hero .line-inner{display:block;transform:translateY(115%);animation:heroIn .95s cubic-bezier(.2,.8,.2,1) forwards}
+    .hero .line:nth-child(2) .line-inner{animation-delay:.11s}
+    .hero .line:nth-child(3) .line-inner{animation-delay:.22s}
+    @keyframes heroIn{to{transform:translateY(0)}}
+    .hero-visual{perspective:1200px}
+    .logo-cloud{animation:heroFloat 5s ease-in-out infinite}
+    @keyframes heroFloat{0%,100%{translate:0 0}50%{translate:0 -12px}}
+    .scroll-hint{
+      position:absolute;left:0;bottom:28px;display:flex;align-items:center;gap:10px;color:#7b8798;font-size:12px;
+      text-transform:uppercase;letter-spacing:.12em
+    }
+    .scroll-hint:before{content:"";width:22px;height:34px;border:1px solid #aeb9c8;border-radius:999px}
+    .scroll-hint:after{content:"";position:absolute;left:10px;top:7px;width:2px;height:7px;background:var(--blue);border-radius:3px;animation:wheel 1.5s infinite}
+    @keyframes wheel{0%{transform:translateY(0);opacity:1}75%{transform:translateY(12px);opacity:0}100%{opacity:0}}
+    .parallax{will-change:transform}
+    .tilt{transform-style:preserve-3d;will-change:transform}
+    .tilt>*{transform:translateZ(10px)}
+    .magnetic{position:relative}
+    .glow-orb{position:absolute;width:260px;height:260px;border-radius:50%;filter:blur(30px);opacity:.18;pointer-events:none;background:radial-gradient(circle,var(--cyan),transparent 67%)}
+    .sticky-story{display:grid;grid-template-columns:.85fr 1.15fr;gap:54px;align-items:start}
+    .sticky-copy{position:sticky;top:130px}
+    .sticky-copy h3{font-size:48px;line-height:1;letter-spacing:-.045em;margin:10px 0 18px}
+    .sticky-copy p{color:var(--muted);line-height:1.7}
+    .story-steps{display:grid;gap:18px}
+    .story-step{
+      min-height:300px;padding:30px;border-radius:28px;border:1px solid var(--line);background:#fff;
+      display:grid;grid-template-columns:70px 1fr;gap:18px;align-items:start;
+      transition:.35s transform,.35s box-shadow,.35s border-color
+    }
+    .story-step.active{transform:translateX(-10px);box-shadow:0 28px 75px rgba(24,58,112,.11);border-color:#bfd1ef}
+    .story-num{font-size:44px;font-weight:800;color:#d1ddec;line-height:1}
+    .story-step.active .story-num{color:var(--blue)}
+    .story-step h4{font-size:27px;margin:0 0 10px}.story-step p{color:var(--muted);line-height:1.65;margin:0}
+    .voice-console{
+      border-radius:30px;background:linear-gradient(160deg,#081225,#0b1830);padding:24px;color:#fff;border:1px solid #183156;
+      box-shadow:0 30px 85px rgba(10,31,67,.25)
+    }
+    .voice-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1b3154;padding-bottom:16px}
+    .status-live{display:inline-flex;align-items:center;gap:7px;color:#7ee7ff;font-size:12px;font-weight:750}
+    .status-live:before{content:"";width:8px;height:8px;border-radius:50%;background:#5df0b6;box-shadow:0 0 0 6px rgba(93,240,182,.1)}
+    .voice-stage{display:grid;place-items:center;min-height:280px}
+    .voice-ring{width:190px;height:190px;border-radius:50%;border:1px solid #28528d;display:grid;place-items:center;position:relative}
+    .voice-ring:before,.voice-ring:after{content:"";position:absolute;border:1px solid #204878;border-radius:50%;animation:pulseRing 2.2s ease-out infinite}
+    .voice-ring:before{inset:-24px}.voice-ring:after{inset:-50px;animation-delay:-1.1s}
+    @keyframes pulseRing{0%{transform:scale(.88);opacity:.85}100%{transform:scale(1.1);opacity:0}}
+    .voice-core{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#78e5ff,#2d6dff 50%,#1c36c9);box-shadow:0 0 55px rgba(55,114,255,.55)}
+    .transcript{display:grid;gap:10px}
+    .trans-line{padding:10px 12px;border-radius:12px;background:#0e213f;border:1px solid #1c3964;color:#aac4e8;font-size:12px;opacity:.45;transform:translateY(5px);transition:.3s}
+    .trans-line.on{opacity:1;transform:none;color:#e8f3ff}
+    .simulator{
+      border:1px solid var(--line);background:#fff;border-radius:30px;padding:30px;box-shadow:var(--shadow)
+    }
+    .sim-input{display:flex;gap:10px;margin-top:20px}
+    .sim-input input{flex:1}
+    .sim-output{margin-top:24px;display:none}
+    .sim-output.show{display:block}
+    .sim-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+    .sim-node{border:1px solid #dfe8f5;background:#f8fbff;border-radius:16px;padding:14px;min-height:95px;font-size:12px}
+    .sim-node b{display:block;color:var(--blue);margin-bottom:7px}
+    .sim-node.animate{animation:nodePop .5s both}
+    @keyframes nodePop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+    .section-transition{
+      height:180px;position:relative;overflow:hidden
+    }
+    .section-transition:before{
+      content:"";position:absolute;left:-10%;right:-10%;top:50%;height:1px;
+      background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);box-shadow:0 0 28px rgba(40,108,255,.35)
+    }
+    .section-transition:after{
+      content:"";position:absolute;left:50%;top:50%;width:90px;height:90px;border-radius:50%;
+      transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(66,199,255,.28),transparent 68%)
+    }
+    .reveal-left{opacity:0;transform:translateX(-34px);transition:.8s cubic-bezier(.2,.8,.2,1)}
+    .reveal-right{opacity:0;transform:translateX(34px);transition:.8s cubic-bezier(.2,.8,.2,1)}
+    .reveal-left.show,.reveal-right.show{opacity:1;transform:none}
+    .card,.sector,.case,.project-card,.integration,.matrix-item,.auto-item{will-change:transform}
+    @media(max-width:950px){
+      .sticky-story{grid-template-columns:1fr}.sticky-copy{position:static}.sim-flow{grid-template-columns:1fr 1fr}
+      .cursor-dot{display:none}
+    }
+    @media(max-width:620px){
+      .sim-input{display:grid}.sim-flow{grid-template-columns:1fr}.scroll-hint{display:none}
+    }
+
+
+    /* V6  INDUSIA logo portal transitions */
+    .logo-portal{
+      position:relative;height:170vh;margin:20px 0;
+    }
+    .portal-sticky{
+      position:sticky;top:0;height:100vh;overflow:hidden;
+      display:grid;place-items:center;background:#f6f8fc;
+      --p:0; --open:0; --rot:0deg;
+    }
+    .portal-bg{
+      position:absolute;inset:0;
+      background:
+        radial-gradient(circle at 50% 50%,rgba(52,117,255,.13),transparent 24%),
+        linear-gradient(180deg,#f7f9fd,#eef4ff);
+      opacity:calc(.35 + var(--p)*.65);
+    }
+    .portal-grid{
+      position:absolute;inset:-10%;
+      background-image:
+        linear-gradient(rgba(42,101,211,.07) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(42,101,211,.07) 1px,transparent 1px);
+      background-size:44px 44px;
+      transform:perspective(900px) rotateX(63deg) translateY(calc(40px - var(--p)*90px)) scale(1.25);
+      transform-origin:center 70%;
+      opacity:calc(var(--p)*.8);
+      mask-image:linear-gradient(to top,#000,transparent 82%);
+    }
+    .portal-rings{
+      position:absolute;width:540px;height:540px;border-radius:50%;
+      border:1px solid rgba(45,112,255,.22);
+      transform:scale(calc(.72 + var(--p)*1.8)) rotate(var(--rot));
+      opacity:calc(.25 + var(--p)*.55);
+      box-shadow:0 0 80px rgba(40,108,255,.08);
+    }
+    .portal-rings:before,.portal-rings:after{
+      content:"";position:absolute;border-radius:50%;border:1px solid rgba(80,203,255,.18)
+    }
+    .portal-rings:before{inset:55px}.portal-rings:after{inset:120px}
+    .portal-data{
+      position:absolute;inset:0;overflow:hidden;pointer-events:none;
+      opacity:calc(var(--p)*.8);
+    }
+    .portal-data i{
+      position:absolute;top:-20%;width:1px;height:110px;
+      background:linear-gradient(transparent,#5ddcff,transparent);
+      animation:dataRain 2.7s linear infinite;
+      filter:drop-shadow(0 0 5px #42c7ff);
+    }
+    .portal-data i:nth-child(1){left:10%;animation-delay:-.2s}.portal-data i:nth-child(2){left:18%;animation-delay:-1.7s}
+    .portal-data i:nth-child(3){left:29%;animation-delay:-.9s}.portal-data i:nth-child(4){left:39%;animation-delay:-2.2s}
+    .portal-data i:nth-child(5){left:52%;animation-delay:-1.1s}.portal-data i:nth-child(6){left:64%;animation-delay:-2.5s}
+    .portal-data i:nth-child(7){left:75%;animation-delay:-.6s}.portal-data i:nth-child(8){left:87%;animation-delay:-1.9s}
+    @keyframes dataRain{to{transform:translateY(135vh)}}
+    .portal-preview{
+      position:absolute;inset:0;display:grid;place-items:center;
+      clip-path:circle(calc(3% + var(--p)*85%) at 50% 50%);
+      background:
+        radial-gradient(circle at 65% 25%,rgba(59,99,255,.32),transparent 30%),
+        radial-gradient(circle at 25% 70%,rgba(50,207,255,.19),transparent 30%),
+        linear-gradient(145deg,#07101f,#0a1730 58%,#07111f);
+      color:#fff;
+      transform:scale(calc(1.08 - var(--p)*.08));
+    }
+    .portal-preview.light{
+      background:
+        radial-gradient(circle at 68% 35%,rgba(57,126,255,.17),transparent 28%),
+        linear-gradient(145deg,#ffffff,#eff5ff);
+      color:var(--ink);
+    }
+    .portal-preview-inner{
+      width:min(1100px,calc(100% - 44px));position:relative;z-index:5;
+      opacity:clamp(0,calc((var(--p) - .23)*1.7),1);
+      transform:translateY(calc(42px - var(--p)*42px));
+    }
+    .portal-preview .portal-kicker{
+      font-size:12px;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:#68d7ff
+    }
+    .portal-preview.light .portal-kicker{color:var(--blue)}
+    .portal-preview h2{
+      font-size:clamp(52px,8vw,112px);line-height:.9;letter-spacing:-.065em;
+      margin:15px 0 18px;max-width:1000px;
+    }
+    .portal-preview p{max-width:650px;color:#aebbd0;font-size:17px;line-height:1.65}
+    .portal-preview.light p{color:var(--muted)}
+    .portal-logo{
+      position:absolute;z-index:20;width:min(430px,64vw);
+      transform:scale(calc(1 + var(--p)*1.7)) rotate(var(--rot));
+      filter:drop-shadow(0 25px 50px rgba(40,108,255,.28));
+      opacity:calc(1 - var(--p)*1.18);
+      pointer-events:none;
+    }
+    .portal-cloud-back,.portal-cloud-mid,.portal-cloud-front,.portal-branch{
+      transform-box:fill-box;transform-origin:center;
+      will-change:transform,opacity;
+    }
+    .portal-cloud-back{transform:translateX(calc(var(--open)*-130px)) rotate(calc(var(--open)*-8deg))}
+    .portal-cloud-mid{transform:translateX(calc(var(--open)*95px)) rotate(calc(var(--open)*7deg))}
+    .portal-cloud-front{transform:translateY(calc(var(--open)*-85px)) scale(calc(1 + var(--open)*.08))}
+    .portal-branch{transform:translateY(calc(var(--open)*80px));opacity:calc(1 - var(--open)*.85)}
+    .portal-label{
+      position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+      z-index:30;font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:#8491a4;
+      opacity:calc(1 - var(--p)*1.2)
+    }
+    .portal-scan{
+      position:absolute;left:0;right:0;height:1px;top:50%;
+      background:linear-gradient(90deg,transparent,#67dfff,transparent);
+      box-shadow:0 0 25px rgba(82,221,255,.55);
+      transform:translateY(calc(-320px + var(--p)*640px));
+      opacity:calc(var(--p)*.85);
+      z-index:8;
+    }
+    @media(max-width:700px){
+      .logo-portal{height:145vh}
+      .portal-rings{width:340px;height:340px}
+      .portal-preview h2{font-size:54px}
+      .portal-preview p{font-size:15px}
+      .portal-label{bottom:22px}
+    }
+
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="#top" aria-label="INDUSIA inicio">
+      <svg viewBox="0 0 120 90" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#214dff"/><stop offset=".52" stop-color="#2f90ff"/><stop offset="1" stop-color="#54ceff"/></linearGradient></defs>
+        <path d="M14 51c0-15 12-27 27-27 3-14 16-23 31-20 10 2 18 9 22 19 15-1 26 10 26 25 0 13-10 23-23 23H35C23 71 14 63 14 51Z" fill="url(#lg)"/>
+        <path d="M45 68v15M58 70v18M72 69v14M86 68v13" stroke="#286cff" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="45" cy="85" r="4" fill="#286cff"/><circle cx="58" cy="89" r="4" fill="#286cff"/><circle cx="72" cy="85" r="4" fill="#286cff"/><circle cx="86" cy="83" r="4" fill="#286cff"/>
+      </svg>
+      INDUSIA
+    </a>
+    <div class="navlinks">
+      <a href="#soluciones">Soluciones</a><a href="#demo">Cómo funciona</a><a href="#proceso">Cómo trabajamos</a><a href="#contacto">Contacto</a>
+    </div>
+    <a class="pill primary magnetic" href="#contacto">Hablemos →</a>
+  </nav>
+
+  <main id="top">
+    <div class="shell hero">
+      <div>
+        <span class="eyebrow">IA · Automatización · Software</span>
+        <h1><span class="line"><span class="line-inner">TU EMPRESA.</span></span><span class="line"><span class="line-inner">CON <span class="accent">INTELIGENCIA</span></span></span><span class="line"><span class="line-inner">PROPIA.</span></span></h1>
+        <p>Creamos agentes de IA, automatizaciones y software a medida que transforman cómo trabajan las empresas.</p>
+        <div class="actions">
+          <a class="pill primary magnetic" href="#contacto">Cuéntanos tu proyecto →</a>
+          <a class="pill magnetic" href="#soluciones">Ver lo que podemos construir →</a>
+        </div>
+      </div>
+
+      <div class="hero-visual" id="heroVisual">
+        <div class="orbital"></div><div class="ring"></div><div class="ring2"></div>
+        <span class="float-chip c1">☎ Agentes IA</span>
+        <span class="float-chip c2">◧ Software a medida</span>
+        <span class="float-chip c3">⟳ Automatizaciones</span>
+        <span class="float-chip c4">⌁ Integraciones</span>
+        <svg class="logo-cloud" id="heroLogo" viewBox="0 0 600 460" role="img" aria-label="Símbolo provisional de INDUSIA">
+          <defs>
+            <linearGradient id="cloudA" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#1639da"/><stop offset=".55" stop-color="#1b69ff"/><stop offset="1" stop-color="#57cbff"/>
+            </linearGradient>
+            <linearGradient id="cloudB" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2334dc"/><stop offset="1" stop-color="#205cfa"/>
+            </linearGradient>
+            <linearGradient id="cloudC" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#46c6ff"/><stop offset="1" stop-color="#276cff"/>
+            </linearGradient>
+            <filter id="blurShadow"><feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#194dca" flood-opacity=".25"/></filter>
+          </defs>
+          <g filter="url(#blurShadow)">
+            <path d="M100 240c0-63 51-114 114-114 17-66 77-109 143-98 55 9 98 48 112 99 65-3 119 47 119 111 0 59-48 107-107 107H204c-57 0-104-47-104-105Z" fill="url(#cloudB)" opacity=".93"/>
+            <path d="M188 251c0-55 43-100 97-102 22-55 77-87 136-75 48 10 85 47 96 95 47 5 83 45 83 94 0 53-43 96-96 96H278c-50 0-90-40-90-90Z" fill="url(#cloudC)" opacity=".93"/>
+            <path d="M235 240c0-43 34-78 77-80 21-45 76-65 122-44 31 14 52 44 56 78 41 8 71 45 71 87 0 47-38 85-85 85H319c-46 0-84-38-84-84Z" fill="url(#cloudA)" opacity=".78"/>
+          </g>
+          <g stroke="#286cff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M230 338v58h-25v22"/><path d="M286 349v83"/><path d="M345 354v60h26v25"/><path d="M402 348v46h37v26"/>
+          </g>
+          <g fill="white" stroke="#286cff" stroke-width="7">
+            <circle cx="205" cy="426" r="12"/><circle cx="286" cy="444" r="12"/><circle cx="371" cy="450" r="12"/><circle cx="439" cy="432" r="12"/>
+          </g>
+          <text x="300" y="285" text-anchor="middle" fill="white" font-size="56" font-weight="800" letter-spacing="14">INDUSIA</text>
+        </svg>
+      </div>
+
+      <div class="scroll-hint">Explora</div><div class="trusted">
+        <span>Construimos para procesos reales de empresa</span>
+        <div class="words"><span>VENTAS</span><span>SOPORTE</span><span>OPERACIONES</span><span>ATENCIN</span><span>GESTIN</span></div>
+      </div>
+    </div>
+    <div class="section-transition"></div>
+
+    <section>
+      <div class="shell connect reveal">
+        <div class="connect-grid">
+          <div class="connect-copy">
+            <span class="eyebrow">Sistema conectado</span>
+            <h3>CONECTAMOS TODO.<br><span>AUTOMATIZAMOS LO QUE IMPORTA.</span></h3>
+            <p>Unimos herramientas, datos y canales para que tu negocio funcione como un sistema: con menos trabajo manual, menos errores y más velocidad.</p>
+            <a class="pill magnetic" href="#demo">Descubre cómo funciona →</a>
+          </div>
+          <div class="network">
+            <svg class="links" viewBox="0 0 700 410" preserveAspectRatio="none" aria-hidden="true">
+              <defs><linearGradient id="g"><stop stop-color="#2f6fff"/><stop offset=".55" stop-color="#42c7ff"/><stop offset="1" stop-color="#6b5cff"/></linearGradient></defs>
+              <path d="M350 205 L120 70"/><path d="M350 205 L590 62"/><path d="M350 205 L95 203"/><path d="M350 205 L620 195"/>
+              <path d="M350 205 L135 345"/><path d="M350 205 L585 340"/><path d="M350 205 L350 30"/><path d="M350 205 L355 387"/>
+            </svg>
+            <div class="network-center"><div><b>IN</b><br><span style="font-size:9px;color:#738096">INDUSIA CORE</span></div></div>
+            <div class="node n1">☎ Llamadas</div><div class="node n2">◔ Chatbots</div><div class="node n3">✆ WhatsApp</div><div class="node n4">▤ Calendario</div>
+            <div class="node n5">✉ Email</div><div class="node n6">◧ Aplicaciones</div><div class="node n7">▥ Datos</div><div class="node n8">◈ CRM</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dark" id="demo">
+      <div class="shell demo">
+        <div>
+          <span class="eyebrow" style="color:#65d5ff">Demo conceptual</span>
+          <h2>AS PODRA TRABAJAR LA IA EN TU EMPRESA.</h2>
+          <p>Un cliente hace una petición. El sistema entiende qué necesita, consulta tus herramientas y ejecuta el proceso correcto sin depender de tareas manuales.</p>
+          <a class="pill magnetic" href="#contacto" style="margin-top:16px;background:white;border:0">Estudiar mi caso →</a>
+        </div>
+        <div class="demo-box">
+          <div class="beam b1"></div><div class="beam b2"></div><div class="beam b3"></div><div class="beam b4"></div>
+          <div class="flow-card f1"><strong>☎ Llamada entrante</strong><small>«Quiero pedir cita»</small></div>
+          <div class="flow-card f2"><strong>◔ Agente de IA</strong><small>Entiende y decide</small></div>
+          <div class="flow-card f3"><strong>▤ Calendario</strong><small>Consulta disponibilidad</small></div>
+          <div class="flow-card f4"><strong>◈ CRM</strong><small>Reserva creada</small></div>
+          <div class="flow-card f5"><strong>✆ WhatsApp</strong><small>Confirmación enviada</small></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section>
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Más que una landing</span><h2>QUE CADA PARTE DE LA WEB DEMUESTRE LO QUE SABEMOS HACER.</h2></div>
+          <p>En lugar de dejar grandes espacios vacíos, utilizamos interfaces, flujos, simulaciones y ejemplos para enseñar capacidad técnica durante todo el recorrido.</p>
+        </div>
+        <div class="showcase">
+          <div class="showcase-main reveal">
+            <span class="eyebrow" style="color:#6bd4ff">Sistema operativo inteligente</span>
+            <h3>UN PANEL CENTRAL PARA VER QU EST HACIENDO TU NEGOCIO.</h3>
+            <p>Podemos diseñar dashboards internos que centralicen llamadas, leads, citas, tareas, incidencias y métricas en una sola herramienta.</p>
+            <div class="dashboard">
+              <div class="dash-top"><span class="dash-dot"></span><span class="dash-dot"></span><span class="dash-dot"></span></div>
+              <div class="dash-grid">
+                <div class="dash-box"><strong>Actividad en tiempo real</strong>12 conversaciones activas<br>4 citas creadas<br>7 leads clasificados</div>
+                <div class="dash-box"><strong>Agentes</strong>Recepción IA · Activo<br>Ventas IA · Activo</div>
+                <div class="dash-box"><strong>Automatizaciones</strong>Lead nuevo → CRM → WhatsApp<br>Cita → Recordatorio → Seguimiento</div>
+                <div class="dash-box"><strong>Alertas</strong>2 conversaciones escaladas<br>1 integración requiere revisión</div>
+              </div>
+            </div>
+          </div>
+          <div class="showcase-side">
+            <div class="mini-demo reveal">
+              <span class="eyebrow">Voz IA</span>
+              <h4>Un agente que suena y actúa como parte del equipo.</h4>
+              <div class="wave">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <p>Atiende, pregunta, entiende y ejecuta acciones sobre sistemas reales.</p>
+            </div>
+            <div class="mini-demo reveal">
+              <span class="eyebrow">Chat IA</span>
+              <h4>Conversaciones conectadas a datos reales.</h4>
+              <div class="chat-preview">
+                <div class="bubble user">¿Tenéis disponibilidad mañana?</div>
+                <div class="bubble bot">Sí. Puedo ofrecerte 17:30 o 19:00. ¿Cuál prefieres?</div>
+                <div class="bubble user">17:30</div>
+                <div class="bubble bot">Perfecto. Reserva creada y confirmación enviada.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="logo-portal">
+      <div class="portal-sticky">
+        <div class="portal-bg"></div>
+        <div class="portal-grid"></div>
+        <div class="portal-rings"></div>
+        <div class="portal-data"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="portal-scan"></div>
+        <div class="portal-preview">
+          <div class="portal-preview-inner">
+            <span class="portal-kicker">CAPTULO 01 · CAPACIDADES</span>
+            <h2>EL LOGO SE ABRE. EL SISTEMA EMPIEZA.</h2>
+            <p>Entramos en el interior de INDUSIA para ver cómo voz, automatización, datos y software se convierten en una única infraestructura inteligente.</p>
+          </div>
+        </div>
+
+<svg class="portal-logo" viewBox="0 0 600 460" aria-hidden="true">
+  <defs>
+    <linearGradient id="pb1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#213bd9"/><stop offset="1" stop-color="#205ffa"/></linearGradient>
+    <linearGradient id="pb2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4bc9ff"/><stop offset="1" stop-color="#286cff"/></linearGradient>
+    <linearGradient id="pb3" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#254fff"/><stop offset=".65" stop-color="#348eff"/><stop offset="1" stop-color="#66d7ff"/></linearGradient>
+  </defs>
+  <g class="portal-cloud-back"><path d="M100 240c0-63 51-114 114-114 17-66 77-109 143-98 55 9 98 48 112 99 65-3 119 47 119 111 0 59-48 107-107 107H204c-57 0-104-47-104-105Z" fill="url(#pb1)"/></g>
+  <g class="portal-cloud-mid"><path d="M188 251c0-55 43-100 97-102 22-55 77-87 136-75 48 10 85 47 96 95 47 5 83 45 83 94 0 53-43 96-96 96H278c-50 0-90-40-90-90Z" fill="url(#pb2)" opacity=".95"/></g>
+  <g class="portal-cloud-front">
+    <path d="M235 240c0-43 34-78 77-80 21-45 76-65 122-44 31 14 52 44 56 78 41 8 71 45 71 87 0 47-38 85-85 85H319c-46 0-84-38-84-84Z" fill="url(#pb3)" opacity=".94"/>
+    <text x="395" y="285" text-anchor="middle" fill="#fff" font-size="48" font-weight="800" letter-spacing="12">INDUSIA</text>
+  </g>
+  <g class="portal-branch" stroke="#286cff" stroke-width="8" stroke-linecap="round" fill="none">
+    <path d="M230 338v58h-25v22"/><path d="M286 349v83"/><path d="M345 354v60h26v25"/><path d="M402 348v46h37v26"/>
+  </g>
+  <g class="portal-branch" fill="#fff" stroke="#286cff" stroke-width="7">
+    <circle cx="205" cy="426" r="12"/><circle cx="286" cy="444" r="12"/><circle cx="371" cy="450" r="12"/><circle cx="439" cy="432" r="12"/>
+  </g>
+</svg>
+
+        <div class="portal-label">SCROLL · OPEN SYSTEM</div>
+      </div>
+    </section>
+
+    <section id="soluciones">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Lo que construimos</span><h2>TECNOLOGA HECHA PARA CMO FUNCIONA TU NEGOCIO.</h2></div>
+          <p>No nos limitamos a una herramienta concreta. Diseñamos la combinación adecuada de IA, automatización e ingeniería para resolver el problema.</p>
+        </div>
+        <div class="services-grid">
+          <article class="card reveal tilt"><span class="num">01</span><div class="icon">☎</div><h3>Agentes telefónicos IA</h3><p>Atención, reservas, soporte, captación y acciones integradas con tus sistemas.</p><button class="more-btn" data-modal="voice">Ver más →</button></article>
+          <article class="card reveal tilt"><span class="num">02</span><div class="icon">◔</div><h3>Chatbots inteligentes</h3><p>Conversaciones que no solo responden: consultan datos, deciden y ejecutan procesos.</p><button class="more-btn" data-modal="chat">Ver más →</button></article>
+          <article class="card reveal tilt"><span class="num">03</span><div class="icon">⟳</div><h3>Automatizaciones</h3><p>Conectamos tareas, equipos y herramientas para eliminar procesos repetitivos.</p><button class="more-btn" data-modal="automation">Ver más →</button></article>
+          <article class="card reveal tilt"><span class="num">04</span><div class="icon">◧</div><h3>Software a medida</h3><p>Aplicaciones, paneles y sistemas construidos exactamente alrededor de tu operativa.</p><button class="more-btn" data-modal="software">Ver más →</button></article>
+          <article class="card reveal tilt"><span class="num">05</span><div class="icon">⌁</div><h3>Integraciones</h3><p>APIs, CRM, calendarios, bases de datos, mensajería y cualquier herramienta que necesite hablar con otra.</p><button class="more-btn" data-modal="integrations">Ver más →</button></article>
+          <article class="card reveal tilt"><span class="num">06</span><div class="icon">◈</div><h3>Sistemas internos</h3><p>Asistentes y herramientas para que tu equipo trabaje con más información y menos fricción.</p><button class="more-btn" data-modal="internal">Ver más →</button></article>
+        </div>
+      </div>
+    </section>
+
+
+    <section>
+      <div class="shell">
+        <div class="client-strip reveal">
+          <div>
+            <span class="eyebrow">Experiencia aplicada</span>
+            <h3>TRABAJAMOS SOBRE NEGOCIOS Y PROCESOS REALES.</h3>
+            <p>INDUSIA está construyendo soluciones para distintos tipos de negocio, desde atención telefónica y reservas hasta automatización operativa y software interno.</p>
+            <div class="proof-note">Mostramos únicamente casos verificables como «reales»; el resto se presenta como demo o proyecto tipo.</div>
+          </div>
+          <div class="client-pills">
+            <span class="client-pill">Cocinas y reformas</span>
+            <span class="client-pill">Clínicas</span>
+            <span class="client-pill">Peluquerías y estética</span>
+            <span class="client-pill">Servicios profesionales</span>
+            <span class="client-pill">Reservas y atención</span>
+            <span class="client-pill">Operaciones internas</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="logo-portal">
+      <div class="portal-sticky">
+        <div class="portal-bg"></div>
+        <div class="portal-grid"></div>
+        <div class="portal-rings"></div>
+        <div class="portal-data"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="portal-scan"></div>
+        <div class="portal-preview light">
+          <div class="portal-preview-inner">
+            <span class="portal-kicker">CAPTULO 02 · CASOS</span>
+            <h2>DE TECNOLOGA A RESULTADOS REALES.</h2>
+            <p>La siguiente capa muestra cómo estos sistemas se traducen en proyectos, operaciones y experiencias concretas para empresas.</p>
+          </div>
+        </div>
+
+<svg class="portal-logo" viewBox="0 0 600 460" aria-hidden="true">
+  <defs>
+    <linearGradient id="pb1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#213bd9"/><stop offset="1" stop-color="#205ffa"/></linearGradient>
+    <linearGradient id="pb2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4bc9ff"/><stop offset="1" stop-color="#286cff"/></linearGradient>
+    <linearGradient id="pb3" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#254fff"/><stop offset=".65" stop-color="#348eff"/><stop offset="1" stop-color="#66d7ff"/></linearGradient>
+  </defs>
+  <g class="portal-cloud-back"><path d="M100 240c0-63 51-114 114-114 17-66 77-109 143-98 55 9 98 48 112 99 65-3 119 47 119 111 0 59-48 107-107 107H204c-57 0-104-47-104-105Z" fill="url(#pb1)"/></g>
+  <g class="portal-cloud-mid"><path d="M188 251c0-55 43-100 97-102 22-55 77-87 136-75 48 10 85 47 96 95 47 5 83 45 83 94 0 53-43 96-96 96H278c-50 0-90-40-90-90Z" fill="url(#pb2)" opacity=".95"/></g>
+  <g class="portal-cloud-front">
+    <path d="M235 240c0-43 34-78 77-80 21-45 76-65 122-44 31 14 52 44 56 78 41 8 71 45 71 87 0 47-38 85-85 85H319c-46 0-84-38-84-84Z" fill="url(#pb3)" opacity=".94"/>
+    <text x="395" y="285" text-anchor="middle" fill="#fff" font-size="48" font-weight="800" letter-spacing="12">INDUSIA</text>
+  </g>
+  <g class="portal-branch" stroke="#286cff" stroke-width="8" stroke-linecap="round" fill="none">
+    <path d="M230 338v58h-25v22"/><path d="M286 349v83"/><path d="M345 354v60h26v25"/><path d="M402 348v46h37v26"/>
+  </g>
+  <g class="portal-branch" fill="#fff" stroke="#286cff" stroke-width="7">
+    <circle cx="205" cy="426" r="12"/><circle cx="286" cy="444" r="12"/><circle cx="371" cy="450" r="12"/><circle cx="439" cy="432" r="12"/>
+  </g>
+</svg>
+
+        <div class="portal-label">SCROLL · OPEN SYSTEM</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Casos y proyectos</span><h2>DEL CONCEPTO A UNA SOLUCIN REAL.</h2></div>
+          <p>Algunos ejemplos reflejan proyectos reales y otros muestran soluciones que podemos construir. Así puedes ver el alcance sin inventar resultados o clientes.</p>
+        </div>
+
+        <div class="case-feature reveal">
+          <div>
+            <span class="eyebrow" style="color:#69d4ff">Caso real · Cocinas Rey</span>
+            <h3>AGENTE TELEFNICO IA PARA ATENCIN Y CITAS.</h3>
+            <p>Diseño de un agente de voz capaz de atender llamadas, responder dudas y gestionar disponibilidad para cocinas, baños y armarios, conectado con calendarios y lógica de negocio.</p>
+            <div class="case-meta">
+              <span>Voz IA</span><span>Disponibilidad</span><span>Calendarios</span><span>Reservas</span><span>n8n</span><span>Retell</span>
+            </div>
+            <button class="more-btn" data-modal="cocinas" style="color:#74d8ff">Ver caso completo </button>
+          </div>
+          <div class="case-screen">
+            <div class="case-top"><span>INDUSIA / VOICE SYSTEM</span><span>LIVE FLOW</span></div>
+            <div class="case-flow">
+              <div>01 · Cliente llama</div>
+              <div>02 · IA detecta: cocina / baño / armario</div>
+              <div>03 · Consulta empleado y disponibilidad</div>
+              <div>04 · Ofrece horario válido</div>
+              <div>05 · Crea o modifica la cita</div>
+              <div>06 · Confirma al cliente</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-grid" style="margin-top:18px">
+          <div class="project-card real reveal tilt">
+            <span class="status">Proyecto real</span>
+            <h3>Cocinas Rey</h3>
+            <p>Agente telefónico con IA y gestión de citas para varias áreas y empleados.</p>
+            <button class="more-btn" data-modal="cocinas">Ver proyecto </button>
+          </div>
+          <div class="project-card reveal tilt">
+            <span class="status">Proyecto tipo</span>
+            <h3>Clínica inteligente</h3>
+            <p>Recepción, reservas, recordatorios, WhatsApp y clasificación de consultas.</p>
+            <button class="more-btn" data-modal="clinic">Ver cómo sería </button>
+          </div>
+          <div class="project-card reveal tilt">
+            <span class="status">Proyecto tipo</span>
+            <h3>Automatización comercial</h3>
+            <p>Captura, clasificación y seguimiento automático de leads con CRM.</p>
+            <button class="more-btn" data-modal="sales">Ver cómo sería </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell philosophy reveal">
+        <h3>NO ADAPTAMOS TU EMPRESA AL SOFTWARE.</h3>
+        <svg class="mini-cloud" viewBox="0 0 120 100" aria-hidden="true"><path d="M12 52c0-15 12-27 27-27 5-15 20-24 35-20 12 3 21 12 24 23 14 1 24 12 24 26 0 14-11 25-25 25H35C22 79 12 68 12 52Z" fill="#286cff"/><path d="M44 75v18M60 75v23M77 75v16" stroke="#63d0ff" stroke-width="4"/><circle cx="44" cy="94" r="4" fill="#63d0ff"/><circle cx="60" cy="99" r="4" fill="#63d0ff"/><circle cx="77" cy="92" r="4" fill="#63d0ff"/></svg>
+        <h3>ADAPTAMOS EL SOFTWARE A TU EMPRESA.</h3>
+      </div>
+    </section>
+
+
+    <section>
+      <div class="shell sticky-story">
+        <div class="sticky-copy reveal-left">
+          <span class="eyebrow">Una solución completa</span>
+          <h3>UNA SOLA EXPERIENCIA. MUCHOS SISTEMAS TRABAJANDO DETRS.</h3>
+          <p>La magia no está en una pantalla bonita. Está en coordinar conversación, lógica, datos, integraciones y acciones para que el proceso ocurra de principio a fin.</p>
+        </div>
+        <div class="story-steps">
+          <div class="story-step reveal-right"><div class="story-num">01</div><div><h4>El cliente entra por cualquier canal</h4><p>Teléfono, web, WhatsApp, email o formulario. El sistema detecta quién es y qué necesita.</p></div></div>
+          <div class="story-step reveal-right"><div class="story-num">02</div><div><h4>La IA entiende contexto e intención</h4><p>No solo detecta palabras clave: interpreta información, mantiene contexto y solicita lo que falta.</p></div></div>
+          <div class="story-step reveal-right"><div class="story-num">03</div><div><h4>Consulta sistemas reales</h4><p>Calendarios, CRM, bases de datos, documentos o APIs aportan la información necesaria.</p></div></div>
+          <div class="story-step reveal-right"><div class="story-num">04</div><div><h4>Ejecuta el siguiente paso</h4><p>Reserva, modifica, registra, clasifica, envía, genera, notifica o deriva según la lógica del negocio.</p></div></div>
+          <div class="story-step reveal-right"><div class="story-num">05</div><div><h4>Todo queda registrado</h4><p>El proceso termina con datos sincronizados, trazabilidad y una experiencia coherente para cliente y equipo.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="proceso">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Cómo trabajamos</span><h2>DE PROBLEMA A SISTEMA.</h2></div>
+          <p>Primero entendemos cómo funciona el negocio. Después diseñamos y construimos la solución alrededor de esa realidad.</p>
+        </div>
+        <div class="process">
+          <div class="step reveal"><b>01</b><h4>Escuchamos</h4><p>Entendemos procesos, fricciones y objetivos.</p></div>
+          <div class="step reveal"><b>02</b><h4>Diseñamos</h4><p>Definimos la arquitectura y experiencia adecuada.</p></div>
+          <div class="step reveal"><b>03</b><h4>Construimos</h4><p>Desarrollamos agentes, automatizaciones o software.</p></div>
+          <div class="step reveal"><b>04</b><h4>Implementamos</h4><p>Integramos el sistema en la operativa real.</p></div>
+          <div class="step reveal"><b>05</b><h4>Optimizamos</h4><p>Medimos, mejoramos y escalamos cuando aporta valor.</p></div>
+        </div>
+      </div>
+    </section>
+
+
+    <div class="marquee">
+      <div class="marquee-track">
+        <span>AGENTES DE VOZ</span><span>CHATBOTS</span><span>WHATSAPP</span><span>EMAIL</span><span>CRM</span><span>CALENDARIOS</span><span>APIS</span><span>BASES DE DATOS</span><span>SOFTWARE A MEDIDA</span><span>REPORTING</span>
+        <span>AGENTES DE VOZ</span><span>CHATBOTS</span><span>WHATSAPP</span><span>EMAIL</span><span>CRM</span><span>CALENDARIOS</span><span>APIS</span><span>BASES DE DATOS</span><span>SOFTWARE A MEDIDA</span><span>REPORTING</span>
+      </div>
+    </div>
+
+    <section>
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Qué cambia</span><h2>DE PROCESOS MANUALES A SISTEMAS QUE SE MUEVEN SOLOS.</h2></div>
+          <p>La automatización no consiste en añadir IA por añadirla. Consiste en reducir fricción y convertir procesos dispersos en un sistema coordinado.</p>
+        </div>
+        <div class="beforeafter reveal">
+          <div class="ba-box">
+            <h4>Antes</h4>
+            <div class="ba-list">
+              <div class="ba-item"><span>1</span><div>Una persona responde cada llamada o mensaje.</div></div>
+              <div class="ba-item"><span>2</span><div>Los datos se copian manualmente entre herramientas.</div></div>
+              <div class="ba-item"><span>3</span><div>Las oportunidades dependen de que alguien haga seguimiento.</div></div>
+              <div class="ba-item"><span>4</span><div>El equipo pierde horas en tareas repetitivas.</div></div>
+            </div>
+          </div>
+          <div class="arrow-big">→</div>
+          <div class="ba-box darkish">
+            <h4>Con Indusia</h4>
+            <div class="ba-list">
+              <div class="ba-item"><span></span><div>Agentes y sistemas atienden, entienden y actúan.</div></div>
+              <div class="ba-item"><span></span><div>La información viaja automáticamente entre plataformas.</div></div>
+              <div class="ba-item"><span></span><div>Los siguientes pasos se activan sin perseguir tareas.</div></div>
+              <div class="ba-item"><span></span><div>Tu equipo se centra en trabajo de mayor valor.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section>
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Demo interactiva</span><h2>DESCRIBE UN PROCESO. TE ENSEAMOS CMO PODRA CONVERTIRSE EN SISTEMA.</h2></div>
+          <p>No es todavía un análisis real de negocio, pero sirve para mostrar de forma interactiva cómo pensamos una automatización.</p>
+        </div>
+        <div class="simulator reveal">
+          <div class="split-panel">
+            <div>
+              <span class="eyebrow">INDUSIA Process Builder</span>
+              <h3 style="font-size:34px;margin:12px 0 12px">¿Qué proceso te gustaría mejorar?</h3>
+              <p style="color:var(--muted);line-height:1.65">Prueba algo como «recibimos muchas llamadas para pedir cita» o «los leads tardan demasiado en recibir respuesta».</p>
+              <div class="sim-input">
+                <input id="processInput" value="Recibimos muchas llamadas para pedir cita y a veces no podemos atenderlas" />
+                <button class="pill primary magnetic" id="buildFlow">Analizar </button>
+              </div>
+            </div>
+            <div class="voice-console">
+              <div class="voice-head"><strong>INDUSIA / LIVE AGENT</strong><span class="status-live">ONLINE</span></div>
+              <div class="voice-stage"><div class="voice-ring"><div class="voice-core"></div></div></div>
+              <div class="transcript" id="transcript">
+                <div class="trans-line on">Cliente: «Quería pedir una cita para mañana.»</div>
+                <div class="trans-line">IA: «Claro. ¿Para qué servicio sería?»</div>
+                <div class="trans-line">Sistema: consultando disponibilidad...</div>
+                <div class="trans-line">IA: «Tengo 17:30 o 19:00.»</div>
+              </div>
+            </div>
+          </div>
+          <div class="sim-output" id="simOutput">
+            <h4 style="font-size:20px;margin:0">Una posible arquitectura sería:</h4>
+            <div class="sim-flow" id="simFlow">
+              <div class="sim-node"><b>01 · Entrada</b>Llamada, formulario o mensaje del cliente.</div>
+              <div class="sim-node"><b>02 · IA</b>Entiende intención, datos y contexto.</div>
+              <div class="sim-node"><b>03 · Lógica</b>Comprueba reglas y disponibilidad.</div>
+              <div class="sim-node"><b>04 · Acción</b>Reserva, actualiza CRM o crea tarea.</div>
+              <div class="sim-node"><b>05 · Seguimiento</b>Confirma, notifica y registra.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Todo lo que podemos automatizar</span><h2>CASI CUALQUIER PROCESO DIGITAL PUEDE SER UN PUNTO DE PARTIDA.</h2></div>
+          <p>Estas son algunas áreas donde solemos encontrar tareas repetitivas, información fragmentada o procesos que dependen demasiado de intervención manual.</p>
+        </div>
+        <div class="auto-map">
+          <div class="auto-item reveal"><b>Atención al cliente</b><span>Llamadas, WhatsApp, preguntas frecuentes, incidencias, derivaciones.</span></div>
+          <div class="auto-item reveal"><b>Ventas</b><span>Captura de leads, clasificación, seguimiento, CRM y propuestas.</span></div>
+          <div class="auto-item reveal"><b>Administración</b><span>Documentos, emails, registros, validaciones y tareas recurrentes.</span></div>
+          <div class="auto-item reveal"><b>Agenda</b><span>Reservas, cambios, cancelaciones, recordatorios y disponibilidad.</span></div>
+          <div class="auto-item reveal"><b>Operaciones</b><span>Alertas, tareas, workflows internos, estados y coordinación.</span></div>
+          <div class="auto-item reveal"><b>Reporting</b><span>Recopilación de datos, informes automáticos y dashboards.</span></div>
+          <div class="auto-item reveal"><b>RRHH interno</b><span>Onboarding, solicitudes, documentación y respuestas internas.</span></div>
+          <div class="auto-item reveal"><b>Software propio</b><span>Herramientas específicas cuando ninguna plataforma existente encaja.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Sectores</span><h2>APLICADO A NEGOCIOS REALES.</h2></div>
+          <p>No vendemos un paquete idéntico a todos. Estudiamos el funcionamiento de cada empresa y construimos alrededor de sus procesos.</p>
+        </div>
+        <div class="sector-grid">
+          <div class="sector reveal tilt"><h4>Clínicas y salud</h4><p>Recepción, reservas, recordatorios, atención telefónica, clasificación de consultas y gestión operativa.</p></div>
+          <div class="sector reveal tilt"><h4>Despachos y consultoras</h4><p>Captación, documentación, agenda, seguimiento, generación de informes y procesos internos.</p></div>
+          <div class="sector reveal tilt"><h4>Retail y e-commerce</h4><p>Atención al cliente, pedidos, incidencias, clasificación de leads y automatización comercial.</p></div>
+          <div class="sector reveal tilt"><h4>Servicios profesionales</h4><p>Reservas, presupuestos, seguimiento, automatización administrativa y sistemas a medida.</p></div>
+          <div class="sector reveal tilt"><h4>Inmobiliario</h4><p>Leads, visitas, seguimiento, CRM, clasificación automática y atención inicial 24/7.</p></div>
+          <div class="sector reveal tilt"><h4>Hostelería</h4><p>Reservas, consultas frecuentes, atención multicanal, turnos y automatización de operaciones.</p></div>
+          <div class="sector reveal tilt"><h4>Industria</h4><p>Procesos internos, reporting, flujos documentales, software específico e integración de sistemas.</p></div>
+          <div class="sector reveal tilt"><h4>Tu sector</h4><p>Si existe un proceso repetitivo, fragmentado o difícil de escalar, podemos estudiar cómo mejorarlo.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dark">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow" style="color:#68d7ff">Capacidades</span><h2>NO SOLO AUTOMATIZAMOS. CONSTRUIMOS INFRAESTRUCTURA INTELIGENTE.</h2></div>
+          <p style="color:#aab7ca">Una solución puede combinar varios agentes, lógica de negocio, APIs, datos, software propio y automatizaciones trabajando como un único sistema.</p>
+        </div>
+        <div class="cap-grid">
+          <div class="cap reveal"><small>01 · Inteligencia</small><h3>Agentes que entienden contexto</h3><p>Voz, chat y asistentes internos capaces de interpretar intención, consultar información y decidir el siguiente paso.</p></div>
+          <div class="cap reveal"><small>02 · Ejecución</small><h3>Sistemas que hacen cosas</h3><p>Crear citas, actualizar CRM, enviar mensajes, generar documentos, clasificar información o activar workflows.</p></div>
+          <div class="cap reveal"><small>03 · Integración</small><h3>Tus herramientas hablando entre sí</h3><p>Conectamos servicios existentes para evitar silos y mantener información sincronizada.</p></div>
+          <div class="cap reveal"><small>04 · Producto</small><h3>Software construido desde cero</h3><p>Cuando una automatización no basta, construimos la interfaz y el sistema que tu empresa necesita.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><span class="eyebrow">Ejemplos</span><h2>COSAS QUE PODRAMOS CONSTRUIR.</h2></div>
+          <p>Ejemplos orientativos para mostrar el tipo de problemas que Indusia puede resolver. Cada proyecto se diseña a medida.</p>
+        </div>
+        <div class="usecases">
+          <div class="case reveal tilt"><span class="tag">Clínica</span><h3>Recepcionista IA</h3><p>Responde llamadas, resuelve dudas, consulta disponibilidad, reserva y envía confirmación.</p><div class="flowline">LLAMADA → IA → CALENDARIO → WHATSAPP → CRM</div></div>
+          <div class="case reveal tilt"><span class="tag">Ventas</span><h3>Calificador de leads</h3><p>Analiza contactos entrantes, identifica prioridad y activa automáticamente el seguimiento comercial.</p><div class="flowline">LEAD → IA → SCORE → CRM → FOLLOW-UP</div></div>
+          <div class="case reveal tilt"><span class="tag">Operaciones</span><h3>Backoffice automático</h3><p>Recibe solicitudes, clasifica documentos, actualiza datos y genera tareas para el equipo.</p><div class="flowline">INPUT → CLASIFICAR → VALIDAR → REGISTRAR → AVISAR</div></div>
+          <div class="case reveal tilt"><span class="tag">WhatsApp</span><h3>Asistente de reservas</h3><p>Atiende clientes, consulta huecos, reserva y recuerda la cita sin intervención constante.</p><div class="flowline">CHAT → INTENCIÓN → DISPONIBILIDAD → RESERVA</div></div>
+          <div class="case reveal tilt"><span class="tag">Software</span><h3>Panel interno a medida</h3><p>Centraliza datos, procesos, clientes y métricas en una aplicación creada para tu operativa.</p><div class="flowline">DATOS → APP → EQUIPO → DECISIONES</div></div>
+          <div class="case reveal tilt"><span class="tag">Soporte</span><h3>Agente omnicanal</h3><p>Un mismo cerebro atiende web, WhatsApp y otros canales manteniendo contexto e información.</p><div class="flowline">WEB + WHATSAPP + EMAIL → IA → ACCIÓN</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell labs reveal">
+        <div>
+          <span class="eyebrow">INDUSIA Labs</span>
+          <h3>LA WEB TAMBIN PUEDE SER UNA DEMO.</h3>
+          <p>Más adelante podemos añadir pequeñas experiencias reales: probar una llamada, simular un agente, describir un proceso y ver cómo lo automatizaríamos, o explorar una app interactiva.</p>
+          <a class="pill primary magnetic" href="#contacto">Quiero algo así en mi empresa →</a>
+        </div>
+        <div class="lab-ui">
+          <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="lab-content">
+            <h4>Describe un proceso</h4>
+            <div class="lab-flow">
+              <div class="lab-row">«Recibimos muchos leads y tardamos en responder...»</div>
+              <div class="lab-row">↳ Detectar lead automáticamente</div>
+              <div class="lab-row">↳ Clasificar intención y prioridad</div>
+              <div class="lab-row">↳ Registrar en CRM</div>
+              <div class="lab-row">↳ Enviar respuesta y crear seguimiento</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section class="logo-portal">
+      <div class="portal-sticky">
+        <div class="portal-bg"></div>
+        <div class="portal-grid"></div>
+        <div class="portal-rings"></div>
+        <div class="portal-data"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="portal-scan"></div>
+        <div class="portal-preview">
+          <div class="portal-preview-inner">
+            <span class="portal-kicker">CAPTULO 03 · ARQUITECTURA</span>
+            <h2>POR DENTRO, TODO EST CONECTADO.</h2>
+            <p>Modelos de IA, APIs, voz, mensajería, datos y software trabajan juntos detrás de una experiencia sencilla para el usuario.</p>
+          </div>
+        </div>
+
+<svg class="portal-logo" viewBox="0 0 600 460" aria-hidden="true">
+  <defs>
+    <linearGradient id="pb1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#213bd9"/><stop offset="1" stop-color="#205ffa"/></linearGradient>
+    <linearGradient id="pb2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4bc9ff"/><stop offset="1" stop-color="#286cff"/></linearGradient>
+    <linearGradient id="pb3" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#254fff"/><stop offset=".65" stop-color="#348eff"/><stop offset="1" stop-color="#66d7ff"/></linearGradient>
+  </defs>
+  <g class="portal-cloud-back"><path d="M100 240c0-63 51-114 114-114 17-66 77-109 143-98 55 9 98 48 112 99 65-3 119 47 119 111 0 59-48 107-107 107H204c-57 0-104-47-104-105Z" fill="url(#pb1)"/></g>
+  <g class="portal-cloud-mid"><path d="M188 251c0-55 43-100 97-102 22-55 77-87 136-75 48 10 85 47 96 95 47 5 83 45 83 94 0 53-43 96-96 96H278c-50 0-90-40-90-90Z" fill="url(#pb2)" opacity=".95"/></g>
+  <g class="portal-cloud-front">
+    <path d="M235 240c0-43 34-78 77-80 21-45 76-65 122-44 31 14 52 44 56 78 41 8 71 45 71 87 0 47-38 85-85 85H319c-46 0-84-38-84-84Z" fill="url(#pb3)" opacity=".94"/>
+    <text x="395" y="285" text-anchor="middle" fill="#fff" font-size="48" font-weight="800" letter-spacing="12">INDUSIA</text>
+  </g>
+  <g class="portal-branch" stroke="#286cff" stroke-width="8" stroke-linecap="round" fill="none">
+    <path d="M230 338v58h-25v22"/><path d="M286 349v83"/><path d="M345 354v60h26v25"/><path d="M402 348v46h37v26"/>
+  </g>
+  <g class="portal-branch" fill="#fff" stroke="#286cff" stroke-width="7">
+    <circle cx="205" cy="426" r="12"/><circle cx="286" cy="444" r="12"/><circle cx="371" cy="450" r="12"/><circle cx="439" cy="432" r="12"/>
+  </g>
+</svg>
+
+        <div class="portal-label">SCROLL · OPEN SYSTEM</div>
+      </div>
+    </section>
+
+    <section id="contacto">
+      <div class="shell contact reveal">
+        <div>
+          <span class="eyebrow">Hablemos</span>
+          <h2>CUNTANOS QU QUIERES CONSTRUIR.</h2>
+          <p>Explícanos qué proceso quieres mejorar, qué problema quieres resolver o qué producto tienes en mente. Primero entendemos el caso; después planteamos la solución.</p>
+        </div>
+        <form id="contactForm">
+          <input placeholder="Nombre y apellidos" required />
+          <input placeholder="Empresa" />
+          <input type="email" placeholder="Email" required />
+          <input placeholder="Teléfono" />
+          <select>
+            <option>¿Qué quieres mejorar o construir?</option>
+            <option>Agente de IA</option><option>Automatización</option><option>Software a medida</option><option>Integración</option><option>No lo tengo claro</option>
+          </select>
+          <textarea placeholder="Cuéntanos brevemente tu idea o necesidad..."></textarea>
+          <button class="submit" type="submit">ENVIAR PROYECTO →</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+
+  <div class="modal" id="infoModal" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" aria-label="Cerrar">×</button>
+      <span class="modal-kicker" id="modalKicker">INDUSIA</span>
+      <h3 id="modalTitle">Detalle</h3>
+      <p id="modalIntro"></p>
+      <div class="modal-grid">
+        <div class="modal-box"><h4>Qué resuelve</h4><div id="modalProblem"></div></div>
+        <div class="modal-box"><h4>Cómo funcionaría</h4><div id="modalHow"></div></div>
+        <div class="modal-box"><h4>Integraciones posibles</h4><div id="modalIntegrations"></div></div>
+        <div class="modal-box"><h4>Ejemplos de uso</h4><div id="modalExamples"></div></div>
+      </div>
+    </div>
+  </div>
+
+<footer>
+    <div class="shell footer-row">
+      <div class="brand">INDUSIA</div>
+      <div>IA · AUTOMATIZACIN · SOFTWARE A MEDIDA</div>
+      <div>indusia.net</div>
+    </div>
+  </footer>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); }});
+    },{threshold:.12});
+    reveals.forEach(el=>io.observe(el));
+
+    const hero = document.getElementById('heroVisual');
+    const logo = document.getElementById('heroLogo');
+    hero.addEventListener('pointermove',e=>{
+      const r=hero.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      logo.style.transform=`rotateY(${x*10}deg) rotateX(${-y*8}deg) translateY(${y*7}px)`;
+    });
+    hero.addEventListener('pointerleave',()=>logo.style.transform='');
+
+    document.getElementById('contactForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const btn=e.currentTarget.querySelector('.submit');
+      btn.textContent='RECIBIDO ✓';
+      btn.style.background='#17243d';
+      setTimeout(()=>{btn.textContent='ENVIAR PROYECTO →';btn.style.background='';},2200);
+    });
+
+    const modalData = {"voice": {"kicker": "Solución · Voz IA", "title": "Agentes telefónicos con IA", "intro": "Agentes capaces de mantener conversaciones naturales y ejecutar acciones reales dentro del negocio.", "problem": "<p>Llamadas perdidas, saturación del equipo, consultas repetitivas y reservas que dependen de una persona disponible.</p>", "how": "<ul><li>Detecta la intención.</li><li>Consulta información.</li><li>Ejecuta una acción.</li><li>Escala a humano cuando corresponde.</li></ul>", "integrations": "<p>Telefonía, calendarios, CRM, WhatsApp, email, bases de datos, APIs y sistemas internos.</p>", "examples": "<ul><li>Reservas y citas.</li><li>Atención 24/7.</li><li>Captación.</li><li>Seguimiento.</li><li>Soporte.</li></ul>"}, "chat": {"kicker": "Solución · Chat IA", "title": "Chatbots inteligentes", "intro": "Asistentes conversacionales que entienden el contexto y están conectados con los procesos del negocio.", "problem": "<p>Consultas repetitivas, tiempos de respuesta lentos y conversaciones que no terminan en una acción.</p>", "how": "<ul><li>Comprende el mensaje.</li><li>Consulta datos.</li><li>Responde con contexto.</li><li>Reserva, registra o deriva.</li></ul>", "integrations": "<p>WhatsApp, web, CRM, calendarios, ERP, bases de datos, email y APIs.</p>", "examples": "<ul><li>Atención al cliente.</li><li>Reservas.</li><li>Estado de pedidos.</li><li>Precalificación comercial.</li></ul>"}, "automation": {"kicker": "Solución · Automatización", "title": "Automatizaciones empresariales", "intro": "Workflows que eliminan pasos manuales y conectan herramientas para que el proceso avance automáticamente.", "problem": "<p>Copiar datos, enviar mensajes, crear tareas, mover documentos o revisar información una y otra vez.</p>", "how": "<ul><li>Evento de entrada.</li><li>Reglas y validaciones.</li><li>IA cuando aporta valor.</li><li>Acciones automáticas.</li></ul>", "integrations": "<p>n8n, Make, CRMs, Google Workspace, Microsoft, APIs, bases de datos y software propio.</p>", "examples": "<ul><li>Lead → CRM → email.</li><li>Formulario → documento.</li><li>Pedido → notificación.</li><li>Informe automático.</li></ul>"}, "software": {"kicker": "Solución · Desarrollo", "title": "Software a medida", "intro": "Aplicaciones construidas alrededor de tus procesos cuando una herramienta estándar no encaja.", "problem": "<p>Equipos obligados a adaptar su forma de trabajar a herramientas genéricas o procesos repartidos entre demasiadas plataformas.</p>", "how": "<ul><li>Analizamos el proceso.</li><li>Diseñamos interfaz y arquitectura.</li><li>Desarrollamos e integramos.</li><li>Mejoramos por iteraciones.</li></ul>", "integrations": "<p>APIs, IA, CRM, bases de datos, pagos, autenticación, calendarios, almacenamiento y herramientas internas.</p>", "examples": "<ul><li>CRM vertical.</li><li>Dashboard.</li><li>Portal cliente.</li><li>App operativa.</li><li>Herramienta interna.</li></ul>"}, "integrations": {"kicker": "Solución · Integraciones", "title": "Integraciones entre sistemas", "intro": "Hacemos que las herramientas existentes compartan información y trabajen como un único ecosistema.", "problem": "<p>Datos duplicados, herramientas aisladas y personas haciendo de puente entre sistemas.</p>", "how": "<ul><li>Mapeamos datos.</li><li>Conectamos APIs.</li><li>Sincronizamos eventos.</li><li>Controlamos errores.</li></ul>", "integrations": "<p>Prácticamente cualquier plataforma con API o mecanismo de integración compatible.</p>", "examples": "<ul><li>CRM → calendario.</li><li>WhatsApp → ERP.</li><li>Web → base de datos.</li></ul>"}, "internal": {"kicker": "Solución · Operaciones", "title": "Sistemas internos inteligentes", "intro": "Herramientas para que los equipos consulten, operen y decidan desde un sistema adaptado a la empresa.", "problem": "<p>Información dispersa, procesos difíciles de seguir y demasiada dependencia de conocimiento informal.</p>", "how": "<ul><li>Centraliza datos.</li><li>Expone acciones.</li><li>Automatiza pasos.</li><li>Incorpora asistentes IA.</li></ul>", "integrations": "<p>Bases de datos, documentos, CRM, herramientas internas, APIs y modelos de IA.</p>", "examples": "<ul><li>Panel operativo.</li><li>Asistente interno.</li><li>Gestión de incidencias.</li><li>Knowledge base.</li></ul>"}, "cocinas": {"kicker": "Caso real · Cocinas Rey", "title": "Agente telefónico IA para atención y citas", "intro": "Proyecto diseñado para gestionar llamadas y citas relacionadas con cocinas, baños y armarios.", "problem": "<p>Atender llamadas, identificar el servicio correcto, manejar distintos empleados y evitar solapes en agendas.</p>", "how": "<ul><li>Saludo y detección de intención.</li><li>Servicio y día solicitado.</li><li>Consulta disponibilidad real.</li><li>Selección de empleado válido.</li><li>Creación, modificación o cancelación.</li></ul>", "integrations": "<p>Retell, n8n, Google Calendar, lógica de disponibilidad por empleado y telefonía.</p>", "examples": "<ul><li>«Quiero una cita para cocinas el martes.»</li><li>«¿Puede atenderme Ainhoa?»</li><li>«Quiero cambiar mi cita.»</li></ul>"}, "clinic": {"kicker": "Proyecto tipo · Clínica", "title": "Recepción inteligente para clínicas", "intro": "Un sistema que combina voz, WhatsApp y automatización para reducir carga administrativa.", "problem": "<p>Llamadas simultáneas, reservas, cambios de cita, preguntas frecuentes y recordatorios.</p>", "how": "<ul><li>Atiende consulta.</li><li>Identifica servicio.</li><li>Comprueba agenda.</li><li>Reserva.</li><li>Confirma y recuerda.</li></ul>", "integrations": "<p>Telefonía, WhatsApp, calendario, CRM/gestión clínica y email.</p>", "examples": "<ul><li>Fisioterapia.</li><li>Dental.</li><li>Estética.</li><li>Centro médico.</li></ul>"}, "sales": {"kicker": "Proyecto tipo · Ventas", "title": "Sistema comercial automatizado", "intro": "Un flujo que capta leads, los cualifica y activa el seguimiento adecuado sin depender de tareas manuales.", "problem": "<p>Leads sin responder, datos incompletos y oportunidades que se enfrían por falta de seguimiento.</p>", "how": "<ul><li>Captura.</li><li>Enriquece.</li><li>Clasifica.</li><li>Registra.</li><li>Activa contacto o tarea.</li></ul>", "integrations": "<p>Formularios, CRM, email, WhatsApp, calendarios, bases de datos y herramientas comerciales.</p>", "examples": "<ul><li>Inbound web.</li><li>Campañas.</li><li>Solicitudes de presupuesto.</li></ul>"}};
+    const modal = document.getElementById('infoModal');
+    const closeModal = () => { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); };
+    document.querySelectorAll('[data-modal]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const d = modalData[btn.dataset.modal];
+        if(!d) return;
+        document.getElementById('modalKicker').textContent=d.kicker;
+        document.getElementById('modalTitle').textContent=d.title;
+        document.getElementById('modalIntro').textContent=d.intro;
+        document.getElementById('modalProblem').innerHTML=d.problem;
+        document.getElementById('modalHow').innerHTML=d.how;
+        document.getElementById('modalIntegrations').innerHTML=d.integrations;
+        document.getElementById('modalExamples').innerHTML=d.examples;
+        modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+      });
+    });
+    document.querySelector('.modal-close').addEventListener('click',closeModal);
+    modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+
+    // V5 scroll progress
+    const progressLine = document.getElementById('progressLine');
+    window.addEventListener('scroll',()=>{
+      const max = document.documentElement.scrollHeight - innerHeight;
+      progressLine.style.width = (max ? scrollY/max*100 : 0) + '%';
+    },{passive:true});
+
+    // Custom cursor
+    const cursorDot = document.getElementById('cursorDot');
+    document.addEventListener('pointermove',e=>{
+      cursorDot.style.left=e.clientX+'px'; cursorDot.style.top=e.clientY+'px';
+    });
+    document.querySelectorAll('a,button,.tilt').forEach(el=>{
+      el.addEventListener('pointerenter',()=>cursorDot.classList.add('big'));
+      el.addEventListener('pointerleave',()=>cursorDot.classList.remove('big'));
+    });
+
+    // Tilt cards
+    document.querySelectorAll('.tilt').forEach(el=>{
+      el.addEventListener('pointermove',e=>{
+        const r=el.getBoundingClientRect();
+        const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+        el.style.transform=`perspective(900px) rotateY(${x*5}deg) rotateX(${-y*5}deg) translateY(-3px)`;
+      });
+      el.addEventListener('pointerleave',()=>el.style.transform='');
+    });
+
+    // Magnetic buttons
+    document.querySelectorAll('.magnetic').forEach(el=>{
+      el.addEventListener('pointermove',e=>{
+        const r=el.getBoundingClientRect();
+        const x=e.clientX-r.left-r.width/2, y=e.clientY-r.top-r.height/2;
+        el.style.transform=`translate(${x*.08}px,${y*.08}px)`;
+      });
+      el.addEventListener('pointerleave',()=>el.style.transform='');
+    });
+
+    // Reveal left/right
+    const directional = document.querySelectorAll('.reveal-left,.reveal-right');
+    const io2 = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io2.unobserve(e.target)}})
+    },{threshold:.12});
+    directional.forEach(el=>io2.observe(el));
+
+    // Sticky story active state
+    const storySteps = document.querySelectorAll('.story-step');
+    const storyIO = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          storySteps.forEach(s=>s.classList.remove('active'));
+          e.target.classList.add('active');
+        }
+      })
+    },{threshold:.6});
+    storySteps.forEach(s=>storyIO.observe(s));
+
+    // Voice transcript loop
+    const transLines=[...document.querySelectorAll('.trans-line')];
+    let transIdx=0;
+    if(transLines.length){
+      setInterval(()=>{
+        transLines.forEach(x=>x.classList.remove('on'));
+        transLines[transIdx%transLines.length].classList.add('on');
+        transIdx++;
+      },1500);
+    }
+
+    // Process builder demo
+    const buildBtn=document.getElementById('buildFlow');
+    if(buildBtn){
+      buildBtn.addEventListener('click',()=>{
+        const out=document.getElementById('simOutput');
+        const nodes=[...document.querySelectorAll('#simFlow .sim-node')];
+        out.classList.add('show');
+        nodes.forEach((n,i)=>{
+          n.classList.remove('animate');
+          setTimeout(()=>n.classList.add('animate'),i*130);
+        });
+        out.scrollIntoView({behavior:'smooth',block:'nearest'});
+      });
+    }
+
+    // Gentle parallax for selected visuals
+    const parallaxEls=[...document.querySelectorAll('.hero-visual,.network,.lab-ui,.case-screen')];
+    window.addEventListener('scroll',()=>{
+      const center=scrollY+innerHeight/2;
+      parallaxEls.forEach(el=>{
+        const r=el.getBoundingClientRect();
+        const docTop=r.top+scrollY;
+        const delta=(center-(docTop+r.height/2))*0.018;
+        el.style.translate=`0 ${Math.max(-16,Math.min(16,delta))}px`;
+      })
+    },{passive:true});
+
+
+    // V6  logo portal scroll transitions
+    const portals = [...document.querySelectorAll('.logo-portal')];
+    const clamp01 = v => Math.max(0,Math.min(1,v));
+    function updatePortals(){
+      portals.forEach(portal=>{
+        const sticky = portal.querySelector('.portal-sticky');
+        const r = portal.getBoundingClientRect();
+        const travel = portal.offsetHeight - innerHeight;
+        const progress = travel > 0 ? clamp01((-r.top)/travel) : 0;
+        const open = clamp01((progress-.10)/.52);
+        sticky.style.setProperty('--p',progress.toFixed(4));
+        sticky.style.setProperty('--open',open.toFixed(4));
+        sticky.style.setProperty('--rot',(progress*72).toFixed(2)+'deg');
+      });
+    }
+    updatePortals();
+    window.addEventListener('scroll',updatePortals,{passive:true});
+    window.addEventListener('resize',updatePortals);
+
+    // Slight depth reaction while the portal is on screen
+    portals.forEach(portal=>{
+      const sticky=portal.querySelector('.portal-sticky');
+      const logo=portal.querySelector('.portal-logo');
+      sticky.addEventListener('pointermove',e=>{
+        const r=sticky.getBoundingClientRect();
+        const x=(e.clientX-r.left)/r.width-.5;
+        const y=(e.clientY-r.top)/r.height-.5;
+        logo.style.marginLeft=(x*10)+'px';
+        logo.style.marginTop=(y*8)+'px';
+      });
+      sticky.addEventListener('pointerleave',()=>{
+        logo.style.marginLeft='0px';logo.style.marginTop='0px';
+      });
+    });
+
+  </script>
+<div class="progress-line" id="progressLine"></div><div class="cursor-dot" id="cursorDot"></div>
+</body>
+</html>
