@@ -17,7 +17,8 @@ Sin framework, sin dependencias y sin paso de compilación. HTML, CSS y JavaScri
 ## Cómo verla y publicarla
 
 - Verla en local: `python -m http.server 8000` dentro de esta carpeta y abrir `http://localhost:8000`.
-- Publicar: arrastrar la carpeta entera a Netlify (despliegue manual) y conectar el dominio indusia.net.
+- Publicada con GitHub Pages desde el repositorio `texiraai-iker/indusia-web` (rama `master`, raíz). Cada push a `master` actualiza indusia.net en 1-2 minutos. El archivo `CNAME` (indusia.net) no se borra. La web anterior está guardada en la rama `web-anterior`.
+- DNS en Namecheap: los registros A y `www` apuntan a GitHub Pages y los MX a Google Workspace (correo). No cambiar los nameservers.
 
 ## Decisiones de diseño (no cambiar sin avisar)
 
