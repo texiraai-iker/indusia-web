@@ -126,7 +126,7 @@ section{scroll-margin-top:72px}
   --mi:clamp(0,calc(var(--m) * 1.5 - var(--i0) * .07),1);
   --ci:clamp(0,calc(var(--c) * 1.5 - var(--i0) * .1),1);
   --px:calc(((var(--clx) * (1 - var(--s)) + var(--scx) * var(--s)) * var(--W)) * (1 - var(--mi)) + var(--gx) * (var(--cw) + var(--gap)) * var(--gs) * var(--mi));
-  --py:calc(((var(--cly) * (1 - var(--s)) + var(--scy) * var(--s)) * var(--H) + var(--cyo) * (1 - var(--s))) * (1 - var(--mi)) + (var(--gy) * (var(--ch) + var(--gap)) * var(--gs) + var(--gyo)) * var(--mi));
+  --py:calc(((var(--cly) * (1 - var(--s)) + var(--scy) * var(--s)) * var(--H) + var(--cyo) * (1 - var(--s))) * (1 - var(--mi)) + (var(--gy) * (var(--ch) + var(--gap)) * var(--gs) + var(--gyo)) * var(--mi) - var(--o) * var(--lift,0px));
   --rot:calc((var(--r1) * (1 - var(--s)) + var(--r2) * var(--s)) * (1 - var(--mi)) * 1deg);
   translate:var(--px) var(--py);rotate:var(--rot);scale:calc(1 + (var(--gs) - 1) * var(--mi));will-change:translate,rotate,scale}
 .hero.is-live .card .float{height:100%;padding:0;position:relative;
@@ -485,6 +485,14 @@ main,.foot{overflow-x:clip}
 .motion .steps li.in::after{transform:scaleX(1)}
 .motion .steps li::before{z-index:1;transition:scale .6s var(--ease) calc(var(--rdl,0s) + .5s);scale:0}
 .motion .steps li.in::before{scale:1}
+
+/* pantallas bajas (portátiles con zoom): al final la cuadrícula sube y el título se retira para dejar sitio a la frase final */
+@media(min-width:900px) and (max-height:780px){
+  .hero.is-live .cards{--lift:clamp(0px,calc(460px - 62vh),130px)}
+  .hero.is-live .t3{opacity:calc(var(--t3) * (1 - var(--o)))}
+  .hero.is-live .counter{opacity:calc(var(--ctr) * (1 - var(--o)))}
+}
+@media(min-width:900px) and (max-height:650px){.hero.is-live .cards{--gs:.9}}
 
 @media (prefers-reduced-motion:reduce){
   .sys-svg *,.toast,.mq-row,.svc-cat{animation:none!important}
