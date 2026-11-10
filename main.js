@@ -34,7 +34,12 @@
      0.31-0.50  entra Indusia: ondas de choque
      0.36-0.62  las tarjetas se ordenan en cuadrícula
      0.46-0.74  cada tarjeta pasa de problema a solución
-     0.64-1.00  "Tu negocio, en orden" y llamada a la acción */
+     0.64-1.00  "Tu negocio, en orden" y llamada a la acción
+     Después (z = progreso del zoom final, de 0 a 1, una pantalla más de scroll):
+     0.00-0.40  las tarjetas se juntan en el logo y el texto se va
+     0.12-0.34  aparece el logo en el centro
+     0.28-1.00  la cámara entra por un hueco del logo hasta quedar en la oscuridad
+     El scroll se suaviza (inercia) para que nada vaya a saltos con la rueda del ratón. */
   var hero = document.querySelector(".hero");
   var stage = hero && hero.querySelector(".stage");
 
@@ -42,27 +47,37 @@
     hero.classList.add("is-live");
     var cnt = $("cnt"), cntWrap = $("cnt-wrap");
     var ease = function (x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+    var sm = function (x) { return x * x * (3 - 2 * x); };
     var seg = function (p, a, b) { return clamp((p - a) / (b - a), 0, 1); };
     var set = function (k, v) { stage.style.setProperty(k, v.toFixed(4)); };
-    var ticking = false, lastN = -1, lastOk = null;
+    var lastN = -1, lastOk = null;
+    var hTarget = 0, hCur = 0, hRaf = 0, hLast = 0;
 
-    var update = function () {
-      ticking = false;
-      var total = hero.offsetHeight - window.innerHeight;
-      var top = hero.getBoundingClientRect().top;
-      var p = total > 0 ? clamp(-top / total, 0, 1) : 0;
+    var render = function (px) {
+      var vh = window.innerHeight;
+      var total = Math.max(2, hero.offsetHeight - vh);
+      var t0 = Math.max(1, total - vh);
+      var p = clamp(px / t0, 0, 1);
+      var z = clamp((px - t0) / vh, 0, 1);
 
-      set("--i", 1 - seg(p, 0, 0.07));
+      set("--i", 1 - sm(seg(p, 0, 0.07)));
       set("--s", ease(seg(p, 0.02, 0.16)));
-      set("--t1", Math.min(seg(p, 0.10, 0.15), 1 - seg(p, 0.31, 0.36)));
+      set("--t1", Math.min(sm(seg(p, 0.09, 0.17)), 1 - sm(seg(p, 0.29, 0.37))));
       set("--b", seg(p, 0.31, 0.50));
       set("--b2", seg(p, 0.35, 0.56));
-      set("--t2", Math.min(seg(p, 0.33, 0.38), 1 - seg(p, 0.54, 0.59)));
+      set("--t2", Math.min(sm(seg(p, 0.33, 0.40)), 1 - sm(seg(p, 0.54, 0.61))));
       set("--m", ease(seg(p, 0.36, 0.62)));
       set("--c", ease(seg(p, 0.46, 0.74)));
-      set("--t3", seg(p, 0.64, 0.70));
-      set("--o", seg(p, 0.78, 0.86));
-      set("--ctr", seg(p, 0.12, 0.17));
+      set("--t3", sm(seg(p, 0.64, 0.71)));
+      set("--o", sm(seg(p, 0.78, 0.88)));
+      set("--ctr", sm(seg(p, 0.12, 0.18)));
+
+      set("--zx", sm(seg(z, 0, 0.2)));
+      set("--zk", ease(seg(z, 0, 0.4)));
+      set("--zf", sm(seg(z, 0.24, 0.44)));
+      set("--zo", sm(seg(z, 0.12, 0.34)) * (1 - sm(seg(z, 0.68, 0.92))));
+      set("--zs", Math.pow(60, sm(seg(z, 0.28, 1))));
+      set("--zt", sm(seg(z, 0.28, 0.85)));
 
       var n = p < 0.34 ? Math.round(8 * seg(p, 0.10, 0.30)) : Math.round(8 * (1 - seg(p, 0.40, 0.54)));
       if (n !== lastN) { cnt.textContent = n; lastN = n; }
@@ -70,12 +85,25 @@
       if (ok !== lastOk) { cntWrap.classList.toggle("ok", ok); lastOk = ok; }
 
       hero.classList.toggle("intro-off", p > 0.07);
-      hero.classList.toggle("outro-on", p > 0.8);
+      hero.classList.toggle("outro-on", p > 0.8 && z < 0.05);
     };
-    var onScroll = function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    update();
+    var read = function () { return clamp(-hero.getBoundingClientRect().top, 0, Math.max(0, hero.offsetHeight - window.innerHeight)); };
+    var hFrame = function (now) {
+      hRaf = 0;
+      var dt = clamp(now - hLast, 8, 64); hLast = now;
+      var d = hTarget - hCur;
+      if (Math.abs(d) < 0.4) hCur = hTarget; else hCur += d * (1 - Math.exp(-dt / 90));
+      render(hCur);
+      if (hCur !== hTarget) hRaf = requestAnimationFrame(hFrame);
+    };
+    var kick = function () {
+      hTarget = read();
+      if (!hRaf) { hLast = performance.now(); hRaf = requestAnimationFrame(hFrame); }
+    };
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", function () { hTarget = hCur = read(); render(hCur); });
+    hTarget = hCur = read();
+    render(hCur);
   }
 
   /* ---------- Sistema animado del inicio ----------
