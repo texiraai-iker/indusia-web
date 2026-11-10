@@ -26,53 +26,66 @@
     }
   }
 
-  /* ---------- Hero: un día en tu negocio, ligado al scroll ----------
+  /* ---------- Hero: la transformación, ligada al scroll ----------
      Línea de tiempo (p = progreso del scroll dentro del hero, de 0 a 1):
-     0.00-0.07  sale el texto de entrada y la red de servicios
-     0.08-0.15  entran el título y el reloj
-     0.14-0.78  el reloj va de las 08:00 a las 24:00; a cada hora aparece lo que hace Indusia
-                (a partir de las 19:00 el negocio está cerrado y Indusia sigue trabajando)
-     0.82-0.93  el reloj se va y queda la frase final con la llamada a la acción
+     0.00-0.07  sale el texto de entrada
+     0.02-0.16  las tarjetas del negocio "caótico" se esparcen
+     0.10-0.31  "Tu negocio hoy" y contador de llamadas perdidas
+     0.31-0.50  entra Indusia: ondas de choque
+     0.36-0.62  las tarjetas se ordenan en cuadrícula
+     0.46-0.74  cada tarjeta pasa de problema a solución
+     0.64-1.00  "Tu negocio, en orden" y llamada a la acción
+     Después (z = progreso del zoom final, de 0 a 1, una pantalla más de scroll):
+     0.00-0.40  las tarjetas se juntan en el logo y el texto se va
+     0.12-0.34  aparece el logo en el centro
+     0.28-1.00  la cámara entra por un hueco del logo hasta quedar en la oscuridad
      El scroll se suaviza (inercia) para que nada vaya a saltos con la rueda del ratón. */
   var hero = document.querySelector(".hero");
   var stage = hero && hero.querySelector(".stage");
 
   if (hero && stage && !reduce) {
     hero.classList.add("is-live");
-    var clk = $("clk");
-    var lis = stage.querySelectorAll(".log li");
-    var HOURS = [];
-    lis.forEach(function (li) { var q = li.getAttribute("data-t").split(":"); HOURS.push(+q[0] + q[1] / 60); });
+    var cnt = $("cnt"), cntWrap = $("cnt-wrap");
+    var ease = function (x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
     var sm = function (x) { return x * x * (3 - 2 * x); };
     var seg = function (p, a, b) { return clamp((p - a) / (b - a), 0, 1); };
     var set = function (k, v) { stage.style.setProperty(k, v.toFixed(4)); };
-    var lastMin = -1, lastClosed = null;
+    var lastN = -1, lastOk = null;
     var hTarget = 0, hCur = 0, hRaf = 0, hLast = 0;
 
     var render = function (px) {
-      var total = Math.max(2, hero.offsetHeight - window.innerHeight);
-      var p = clamp(px / total, 0, 1);
-      var day = seg(p, 0.14, 0.78);
-      var hour = 8 + 16 * day;
+      var vh = window.innerHeight;
+      var total = Math.max(2, hero.offsetHeight - vh);
+      var t0 = Math.max(1, total - vh);
+      var p = clamp(px / t0, 0, 1);
+      var z = clamp((px - t0) / vh, 0, 1);
 
       set("--i", 1 - sm(seg(p, 0, 0.07)));
-      set("--t1", Math.min(sm(seg(p, 0.08, 0.15)), 1 - sm(seg(p, 0.80, 0.86))));
-      set("--dv", Math.min(sm(seg(p, 0.08, 0.15)), 1 - sm(seg(p, 0.82, 0.90))));
-      set("--hp", day);
-      set("--o", sm(seg(p, 0.84, 0.93)));
-      for (var k = 0; k < lis.length; k++) lis[k].style.setProperty("--e", sm(seg(hour, HOURS[k] - 0.3, HOURS[k] + 0.3)).toFixed(3));
+      set("--s", ease(seg(p, 0.02, 0.16)));
+      set("--t1", Math.min(sm(seg(p, 0.09, 0.17)), 1 - sm(seg(p, 0.29, 0.37))));
+      set("--b", seg(p, 0.31, 0.50));
+      set("--b2", seg(p, 0.35, 0.56));
+      set("--t2", Math.min(sm(seg(p, 0.33, 0.40)), 1 - sm(seg(p, 0.54, 0.61))));
+      set("--m", ease(seg(p, 0.36, 0.62)));
+      set("--c", ease(seg(p, 0.46, 0.74)));
+      set("--t3", sm(seg(p, 0.64, 0.71)));
+      set("--o", sm(seg(p, 0.78, 0.88)));
+      set("--ctr", sm(seg(p, 0.12, 0.18)));
 
-      var mins = Math.min(1439, Math.floor(hour * 60));
-      if (mins !== lastMin) {
-        var h = Math.floor(mins / 60), mi = mins % 60;
-        clk.textContent = (h < 10 ? "0" : "") + h + ":" + (mi < 10 ? "0" : "") + mi;
-        lastMin = mins;
-      }
-      var closed = hour >= 19;
-      if (closed !== lastClosed) { hero.classList.toggle("is-closed", closed); lastClosed = closed; }
+      set("--zx", sm(seg(z, 0, 0.2)));
+      set("--zk", ease(seg(z, 0, 0.4)));
+      set("--zf", sm(seg(z, 0.24, 0.44)));
+      set("--zo", sm(seg(z, 0.12, 0.34)) * (1 - sm(seg(z, 0.68, 0.92))));
+      set("--zs", Math.pow(60, sm(seg(z, 0.28, 1))));
+      set("--zt", sm(seg(z, 0.28, 0.85)));
+
+      var n = p < 0.34 ? Math.round(8 * seg(p, 0.10, 0.30)) : Math.round(8 * (1 - seg(p, 0.40, 0.54)));
+      if (n !== lastN) { cnt.textContent = n; lastN = n; }
+      var ok = p > 0.54;
+      if (ok !== lastOk) { cntWrap.classList.toggle("ok", ok); lastOk = ok; }
 
       hero.classList.toggle("intro-off", p > 0.07);
-      hero.classList.toggle("outro-on", p > 0.88);
+      hero.classList.toggle("outro-on", p > 0.8 && z < 0.05);
     };
     var read = function () { return clamp(-hero.getBoundingClientRect().top, 0, Math.max(0, hero.offsetHeight - window.innerHeight)); };
     var hFrame = function (now) {
