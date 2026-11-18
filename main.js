@@ -28,10 +28,11 @@
 
   /* ---------- Hero cinematográfico: Indusia (el faro) despeja la tormenta de tareas ----------
      p = progreso del scroll dentro del hero (0 a 1). Solo se mueven opacidades y un zoom lento, con inercia.
-     0.00-0.22  tormenta con lluvia y el texto principal; flotan las tareas pendientes
-     0.08-0.80  una onda lima sale del faro; por donde pasa se abre el día soleado y se tachan los problemas que alcanza
-     0.20-0.62  cada tarea se tacha en lima y se apaga; el contador baja de 6 a 0
-     0.84-1.00  frase final con la llamada a la acción y fundido con el fondo de la web */
+     0.00-0.08  tormenta con el texto principal (pausa) · 0.08-0.16 el texto se va
+     0.15-0.21  "Entonces se enciende Indusia." · 0.20-0.74 las nubes se deshacen desde el faro
+     0.74-0.84  pausa con el día despejado y las 6 soluciones · 0.86-0.93 frase final
+     Cada problema se convierte en su solución cuando las nubes se deshacen donde está; el contador baja de 6 a 0.
+     0.95-1.00  la imagen se funde con el fondo de la web */
   var scHero = document.querySelector(".hero");
   var scStage = scHero && scHero.querySelector(".stage");
 
@@ -88,7 +89,7 @@
         " vec2 q=(uv-light)*vec2(1.7778,1.);float d=length(q)/maxd;",
         " float n=texture2D(N,uv*vec2(1.6,.9)+vec2(time*.012,0.)).r*.65+texture2D(N,uv*vec2(4.,2.25)-vec2(time*.02,time*.005)).r*.35;",
         " float field=d*.78+n*.42;",
-        " float th=mix(-.06,1.42,prog);",
+        " float th=mix(.08,1.42,prog);",
         " float m=smoothstep(th,th-.16,field);",
         " vec3 a=texture2D(A,uv).rgb,b=texture2D(B,uv).rgb;",
         " a=mix(a,a*1.22+.03,prog*.7);",
@@ -182,12 +183,12 @@
       scMaxR = Math.max(Math.hypot(lx - st.left, ly - st.top), Math.hypot(st.right - lx, ly - st.top), Math.hypot(lx - st.left, st.bottom - ly), Math.hypot(st.right - lx, st.bottom - ly));
       scScene.style.transform = keep;
     };
-    var scTarget = 0, scCur = 0, scRaf = 0, scLast = 0;
+    var scTarget = 0, scCur = 0, scRaf = 0, scLast = 0, scMaxV = 3;
 
     var scRender = function (px) {
       var total = Math.max(2, scHero.offsetHeight - window.innerHeight);
       var p = clamp(px / total, 0, 1), narrow = scNarrow.matches;
-      var fw = scFrameEl.offsetWidth, q = scSeg(p, narrow ? 0.22 : 0.08, 0.84), e = q * q * (1.6 - 0.6 * q), r1 = Math.round(e * (scMaxR + fw * 0.04));
+      var fw = scFrameEl.offsetWidth, q = scSeg(p, 0.20, 0.74), e = 0.5 - 0.5 * Math.cos(Math.PI * q), r1 = Math.round(e * (scMaxR + fw * 0.04));
       if (r1 !== scLastR) {
         scSun.style.setProperty("--r1", r1 + "px");
         scRing.style.transform = "scale(" + (r1 / 70.5).toFixed(3) + ")";
@@ -195,32 +196,32 @@
       }
       scOp(scRing, scGL ? 0 : (e > 0 && e < 1 ? Math.min(1, e * 8, (1 - e) * 5) : 0));
       if (scGL) scGL.prog = e;
-      var th = -0.06 + 1.48 * e;
+      var th = 0.08 + 1.34 * e;
       scScene.style.transform = "scale(" + (1 + 0.06 * scSm(p)).toFixed(4) + ")";
 
-      var io = 1 - scSm(scSeg(p, 0.12, 0.22));
+      var io = 1 - scSm(scSeg(p, 0.08, 0.16));
       scOp(scIntro, io); scShL.style.opacity = (io * 0.95).toFixed(3);
       scIntro.style.transform = "translateY(" + (-(1 - io) * 28).toFixed(1) + "px)";
       var vis = io > 0.02;
       if (vis !== scLastVis) { scIntro.style.visibility = vis ? "visible" : "hidden"; scLastVis = vis; }
-      scOp(scMarker, (narrow ? 1 - io : 1) * (1 - scSm(scSeg(p, 0.84, 0.90))));
+      scOp(scMarker, (narrow ? 1 - io : 1) * (1 - scSm(scSeg(p, 0.84, 0.89))));
 
       var shown = narrow ? 1 - io : 1, left = 0, zoom = 1 + 0.06 * scSm(p), rr = r1 * zoom * scScale();
       for (var k = 0; k < scProbs.length; k++) {
         /* cuando la onda del faro alcanza el problema, se convierte en su solución en lima */
         var d = scDist[k] || 0, x = scGL ? scSm(clamp((th + 0.02 - ((scUV[k] || 0) * 0.78 + 0.21)) / 0.1, 0, 1)) : scSm(clamp((rr - d + 40) / 90, 0, 1));
-        scOp(scProbs[k], shown * (1 - scSm(scSeg(p, 0.86, 0.92))));
+        scOp(scProbs[k], shown * (1 - scSm(scSeg(p, 0.84, 0.89))));
         scOp(scPb[k], 1 - x); scOp(scOk[k], x);
         scOk[k].style.transform = "scale(" + (0.92 + 0.08 * x).toFixed(3) + ")";
         if (x < 0.5) left++;
       }
-      var ch = scSm(scSeg(p, narrow ? 0.24 : 0.20, narrow ? 0.30 : 0.26)) * (1 - scSm(scSeg(p, 0.42, 0.50)));
+      var ch = scSm(scSeg(p, 0.15, 0.21)) * (1 - scSm(scSeg(p, 0.34, 0.40)));
       scOp(scChap, ch); scChap.style.transform = "translateY(" + ((1 - ch) * 14).toFixed(1) + "px)";
-      scOp(scVig, 1 - 0.5 * scSm(scSeg(p, 0.74, 0.86)));
-      scOp(scClock, scSm(scSeg(p, narrow ? 0.16 : 0.04, narrow ? 0.22 : 0.12)) * (1 - scSm(scSeg(p, 0.82, 0.88))));
+      scOp(scVig, 1 - 0.5 * scSm(scSeg(p, 0.60, 0.80)));
+      scOp(scClock, scSm(scSeg(p, 0.12, 0.18)) * (1 - scSm(scSeg(p, 0.84, 0.89))));
       if (left !== scLastN) { $("clk").textContent = left; scLastN = left; }
 
-      var ov = scSm(scSeg(p, 0.87, 0.95));
+      var ov = scSm(scSeg(p, 0.86, 0.93));
       scOp(scOutro, ov); scShC.style.opacity = (ov * 0.9).toFixed(3);
       scOutro.style.transform = "translateY(calc(-50% + " + ((1 - ov) * 24).toFixed(1) + "px))";
       scOutro.style.visibility = ov > 0.02 ? "visible" : "hidden";
@@ -231,7 +232,10 @@
       scRaf = 0;
       var dt = clamp(now - scLast, 8, 64); scLast = now;
       var d = scTarget - scCur;
-      if (Math.abs(d) < 0.4) scCur = scTarget; else scCur += d * (1 - Math.exp(-dt / 100));
+      /* suavizado con inercia y límite de velocidad: aunque se baje muy rápido, el inicio entero tarda al menos ~2,4 s */
+      var step = d * (1 - Math.exp(-dt / 130)), cap = scMaxV * dt;
+      if (step > cap) step = cap; else if (step < -cap) step = -cap;
+      if (Math.abs(d) < 0.4) scCur = scTarget; else scCur += step;
       scRender(scCur);
       if (scCur !== scTarget) scRaf = requestAnimationFrame(scFrame);
     };
@@ -240,7 +244,9 @@
       if (!scRaf) { scLast = performance.now(); scRaf = requestAnimationFrame(scFrame); }
     };
     window.addEventListener("scroll", scKick, { passive: true });
-    window.addEventListener("resize", function () { scMeasure(); scTarget = scCur = scRead(); scRender(scCur); });
+    var scSetV = function () { scMaxV = Math.max(1, (scHero.offsetHeight - window.innerHeight) / 2400); };
+    window.addEventListener("resize", function () { scMeasure(); scSetV(); scTarget = scCur = scRead(); scRender(scCur); });
+    scSetV();
     scMeasure();
     scTarget = scCur = scRead();
     scRender(scCur);
