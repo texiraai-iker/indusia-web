@@ -26,62 +26,225 @@
     }
   }
 
-  /* ---------- Hero: la transformación, ligada al scroll ----------
-     Línea de tiempo (p = progreso del scroll dentro del hero, de 0 a 1):
-     0.00-0.07  sale el texto de entrada
-     0.02-0.16  las tarjetas del negocio "caótico" se esparcen
-     0.10-0.31  "Tu negocio hoy" y contador de llamadas perdidas
-     0.31-0.50  entra Indusia: ondas de choque
-     0.36-0.62  las tarjetas se ordenan en cuadrícula
-     0.46-0.74  cada tarjeta pasa de problema a solución
-     0.64-1.00  "Tu negocio, en orden" y llamada a la acción */
-  var hero = document.querySelector(".hero");
-  var stage = hero && hero.querySelector(".stage");
+  /* ---------- Hero cinematográfico: Indusia (el faro) despeja la tormenta de tareas ----------
+     p = progreso del scroll dentro del hero (0 a 1). Solo se mueven opacidades y un zoom lento, con inercia.
+     0.00-0.22  tormenta con lluvia y el texto principal; flotan las tareas pendientes
+     0.08-0.80  una onda lima sale del faro; por donde pasa se abre el día soleado y se tachan los problemas que alcanza
+     0.20-0.62  cada tarea se tacha en lima y se apaga; el contador baja de 6 a 0
+     0.84-1.00  frase final con la llamada a la acción y fundido con el fondo de la web */
+  var scHero = document.querySelector(".hero");
+  var scStage = scHero && scHero.querySelector(".stage");
 
-  if (hero && stage && !reduce) {
-    hero.classList.add("is-live");
-    var cnt = $("cnt"), cntWrap = $("cnt-wrap");
-    var ease = function (x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
-    var seg = function (p, a, b) { return clamp((p - a) / (b - a), 0, 1); };
-    var set = function (k, v) { stage.style.setProperty(k, v.toFixed(4)); };
-    var ticking = false, lastN = -1, lastOk = null;
+  if (scHero && scStage && !reduce) {
+    scHero.classList.add("is-live");
+    var scScene = scStage.querySelector(".scene"), scLayers = scStage.querySelectorAll(".layer");
+    var scIntro = scStage.querySelector(".intro"), scClock = $("clk").parentNode, scOutro = scStage.querySelector(".outro");
+    var scMarker = scStage.querySelector(".marker"), scProbs = scStage.querySelectorAll(".prob");
+    var scShL = scStage.querySelector(".sh-l"), scShC = scStage.querySelector(".sh-c"), scInk = scStage.querySelector(".ink");
+    var scNarrow = window.matchMedia("(max-width: 899px)");
+    var scSm = function (x) { return x * x * (3 - 2 * x); };
+    var scSeg = function (p, a, b) { return clamp((p - a) / (b - a), 0, 1); };
+    var scOp = function (el, v) { v = Math.round(v * 500) / 500; if (el._o !== v) { el._o = v; el.style.opacity = v; } };
+    var scLastN = -1, scLastVis = null, scLastR = -1;
+    var scPb = [], scOk = [];
+    for (var j = 0; j < scProbs.length; j++) { scPb.push(scProbs[j].querySelector(".pb")); scOk.push(scProbs[j].querySelector(".ok")); }
+    var scChap = scStage.querySelector(".chap"), scVig = scStage.querySelector(".vig");
+    /* vídeos (si están): se ponen encima de la foto y solo se reproducen mientras se ve el inicio */
+    var scVids = [];
+    for (var v = 0; v < scLayers.length; v++) {
+      var src = scLayers[v].getAttribute("data-video");
+      if (!src) continue;
+      var vid = document.createElement("video");
+      vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute("playsinline", ""); vid.preload = "auto";
+      /* WebM para Chrome/Firefox/Android y MP4 para Safari/iPhone */
+      var s1 = document.createElement("source"); s1.src = src.replace(/\.mp4$/, ".webm"); s1.type = "video/webm"; vid.appendChild(s1);
+      var s2 = document.createElement("source"); s2.src = src; s2.type = "video/mp4"; vid.appendChild(s2);
+      scLayers[v].appendChild(vid); scVids.push(vid);
+    }
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        var on = es[0].isIntersecting;
+        scHero.classList.toggle("off", !on);
+        scVids.forEach(function (vd) { if (on) { var pr = vd.play(); if (pr && pr.catch) pr.catch(function () {}); } else vd.pause(); });
+        if (scGL) scGL.setVisible(on);
+      }).observe(scHero);
+    }
+    var scFrameEl = scStage.querySelector(".frame"), scSun = scStage.querySelector(".l-sun"), scRing = scStage.querySelector(".ring");
+    /* ---------- Transición con WebGL: las nubes se deshacen desde el faro ----------
+       Mezcla los dos vídeos en la tarjeta gráfica con un borde irregular (ruido de nubes),
+       luz cálida en el borde, rayos de sol desde el faro y relámpagos. Si no hay WebGL, se usa el círculo. */
+    var scGL = null;
+    (function () {
+      if (scVids.length < 2) return;
+      var cv = document.createElement("canvas"); cv.className = "gl-scene"; cv.setAttribute("aria-hidden", "true");
+      var gl = null;
+      try { gl = cv.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance" }); } catch (err) { gl = null; }
+      if (!gl) return;
+      var VS = "attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}";
+      var FS = [
+        "precision mediump float;",
+        "uniform sampler2D A,B,N;uniform float prog,time,maxd,flash;uniform vec2 light;varying vec2 uv;",
+        "void main(){",
+        " vec2 q=(uv-light)*vec2(1.7778,1.);float d=length(q)/maxd;",
+        " float n=texture2D(N,uv*vec2(1.6,.9)+vec2(time*.012,0.)).r*.65+texture2D(N,uv*vec2(4.,2.25)-vec2(time*.02,time*.005)).r*.35;",
+        " float field=d*.78+n*.42;",
+        " float th=mix(-.06,1.42,prog);",
+        " float m=smoothstep(th,th-.16,field);",
+        " vec3 a=texture2D(A,uv).rgb,b=texture2D(B,uv).rgb;",
+        " a=mix(a,a*1.22+.03,prog*.7);",
+        " vec3 col=mix(a,b,m);",
+        " float on=smoothstep(0.,.04,prog)*(1.-smoothstep(.93,1.,prog));",
+        " float e=smoothstep(.14,0.,abs(field-(th-.08)));",
+        " col+=vec3(1.,.92,.74)*e*.30*on;",
+        " float ang=atan(q.y,q.x);",
+        " float rays=pow(.5+.5*sin(ang*17.+n*5.+time*.15),10.)*smoothstep(th+.38,th-.02,field)*(1.-m);",
+        " col+=vec3(1.,.95,.82)*rays*.15*on;",
+        " col+=vec3(.86,.9,.96)*flash*(1.-m)*(1.-prog);",
+        " gl_FragColor=vec4(col,1.);}"
+      ].join("\n");
+      var sh = function (type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; };
+      var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+      if (!vs || !fs) return;
+      var pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+      if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
+      gl.useProgram(pr);
+      var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      var loc = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      var U = {}; ["A", "B", "N", "prog", "time", "maxd", "flash", "light"].forEach(function (k) { U[k] = gl.getUniformLocation(pr, k); });
+      gl.uniform1i(U.A, 0); gl.uniform1i(U.B, 1); gl.uniform1i(U.N, 2);
+      var ntex = gl.createTexture(); gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, ntex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, 1, 1, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, new Uint8Array([128]));
+      var nimg = new Image(); nimg.onload = function () { gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, ntex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, gl.LUMINANCE, gl.UNSIGNED_BYTE, nimg); lastKey = ""; }; nimg.src = "img/nubes.png";
+      var imgs = [scLayers[0].querySelector("img"), scLayers[1].querySelector("img")];
+      var tex = [0, 1].map(function (i) {
+        var t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([10, 11, 15]));
+        return t;
+      });
+      var lastT = [-1, -1], ready = [false, false];
+      var upload = function (i) {
+        var vd = scVids[i], src = null;
+        if (vd.readyState >= 2) { if (vd.currentTime === lastT[i] && ready[i]) return; lastT[i] = vd.currentTime; src = vd; }
+        else if (!ready[i] && imgs[i] && imgs[i].complete && imgs[i].naturalWidth) src = imgs[i];
+        if (!src) return;
+        gl.activeTexture(gl.TEXTURE0 + i); gl.bindTexture(gl.TEXTURE_2D, tex[i]);
+        try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, src); ready[i] = true; } catch (err) {}
+      };
+      var t0 = performance.now(), raf = 0, visible = true, lastKey = "", lastDraw = 0;
+      var api = { prog: 0, maxd: 1, light: [0.491, 0.353] };
+      var draw = function (now) {
+        raf = 0;
+        var w = Math.min(1280, Math.round(scFrameEl.offsetWidth * Math.min(window.devicePixelRatio || 1, 2))), hh = Math.round(w * 9 / 16);
+        if (cv.width !== w || cv.height !== hh) { cv.width = w; cv.height = hh; gl.viewport(0, 0, w, hh); }
+        /* solo se redibuja si cambia algo: un fotograma nuevo de vídeo, el scroll o un relámpago */
+        var c0 = scVids[0].currentTime, c1 = scVids[1].currentTime;
+        var t = (now - t0) / 1000, fp = (t % 9) / 9;
+        var key = c0 + "|" + c1 + "|" + api.prog.toFixed(4) + "|" + (fp > 0.6 && fp < 0.66 ? Math.floor(t * 30) : 0) + "|" + cv.width;
+        if (key === lastKey && now - lastDraw < 1000) { if (visible) raf = requestAnimationFrame(draw); return; }
+        lastKey = key; lastDraw = now;
+        upload(0); upload(1);
+        var fl = fp > 0.615 && fp < 0.63 ? 0.30 : fp > 0.635 && fp < 0.65 ? 0.18 : 0;
+        gl.uniform1f(U.prog, api.prog); gl.uniform1f(U.time, t); gl.uniform1f(U.maxd, api.maxd);
+        gl.uniform1f(U.flash, fl); gl.uniform2f(U.light, api.light[0], api.light[1]);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        if (visible) raf = requestAnimationFrame(draw);
+      };
+      api.setVisible = function (on) { visible = on; if (on && !raf) raf = requestAnimationFrame(draw); };
+      cv.addEventListener("webglcontextlost", function (ev) { ev.preventDefault(); scHero.classList.remove("gl"); scGL = null; visible = false; });
+      scFrameEl.insertBefore(cv, scFrameEl.querySelector(".ring"));
+      scHero.classList.add("gl");
+      scGL = api;
+      raf = requestAnimationFrame(draw);
+    })();
 
-    var update = function () {
-      ticking = false;
-      var total = hero.offsetHeight - window.innerHeight;
-      var top = hero.getBoundingClientRect().top;
-      var p = total > 0 ? clamp(-top / total, 0, 1) : 0;
-
-      set("--i", 1 - seg(p, 0, 0.07));
-      set("--s", ease(seg(p, 0.02, 0.16)));
-      set("--t1", Math.min(seg(p, 0.10, 0.15), 1 - seg(p, 0.31, 0.36)));
-      set("--b", seg(p, 0.31, 0.50));
-      set("--b2", seg(p, 0.35, 0.56));
-      set("--t2", Math.min(seg(p, 0.33, 0.38), 1 - seg(p, 0.54, 0.59)));
-      set("--m", ease(seg(p, 0.36, 0.62)));
-      set("--c", ease(seg(p, 0.46, 0.74)));
-      set("--t3", seg(p, 0.64, 0.70));
-      set("--o", seg(p, 0.78, 0.86));
-      set("--ctr", seg(p, 0.12, 0.17));
-
-      var n = p < 0.34 ? Math.round(8 * seg(p, 0.10, 0.30)) : Math.round(8 * (1 - seg(p, 0.40, 0.54)));
-      if (n !== lastN) { cnt.textContent = n; lastN = n; }
-      var ok = p > 0.54;
-      if (ok !== lastOk) { cntWrap.classList.toggle("ok", ok); lastOk = ok; }
-
-      hero.classList.toggle("intro-off", p > 0.07);
-      hero.classList.toggle("outro-on", p > 0.8);
+    /* distancia en pantalla de cada problema a la luz del faro, para tacharlo cuando lo alcanza la onda */
+    var scDist = [], scMaxR = 1000, scUV = [];
+    var scScale = function () { return 1; };
+    var scMeasure = function () {
+      var keep = scScene.style.transform; scScene.style.transform = "none";
+      var dot = scStage.querySelector(".mk-dot").getBoundingClientRect(), lx = dot.left + dot.width / 2, ly = dot.top + dot.height / 2;
+      for (var i = 0; i < scProbs.length; i++) {
+        var b = scProbs[i].getBoundingClientRect(), cx = clamp(lx, b.left, b.right), cy = clamp(ly, b.top, b.bottom);
+        scDist[i] = Math.hypot(cx - lx, cy - ly);
+      }
+      var st = scStage.getBoundingClientRect(), fr = scFrameEl.getBoundingClientRect();
+      if (scGL) {
+        var L = scGL.light, A = 16 / 9, du = function (x, y) { var u = (x - fr.left) / fr.width, v = (y - fr.top) / fr.height; return Math.hypot((u - L[0]) * A, v - L[1]); };
+        scGL.maxd = Math.max(du(st.left, st.top), du(st.right, st.top), du(st.left, st.bottom), du(st.right, st.bottom));
+        scUV = [];
+        for (var u2 = 0; u2 < scProbs.length; u2++) { var bb = scProbs[u2].getBoundingClientRect(); scUV.push(du(bb.left + bb.width / 2, bb.top + bb.height / 2) / scGL.maxd); }
+      }
+      scMaxR = Math.max(Math.hypot(lx - st.left, ly - st.top), Math.hypot(st.right - lx, ly - st.top), Math.hypot(lx - st.left, st.bottom - ly), Math.hypot(st.right - lx, st.bottom - ly));
+      scScene.style.transform = keep;
     };
-    var onScroll = function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    update();
-  }
+    var scTarget = 0, scCur = 0, scRaf = 0, scLast = 0;
 
-  /* ---------- Sistema animado del inicio ----------
-     Con movimiento reducido se para la animación SVG. */
-  var sysSvg = document.querySelector(".sys-svg");
-  if (sysSvg && reduce && sysSvg.pauseAnimations) sysSvg.pauseAnimations();
+    var scRender = function (px) {
+      var total = Math.max(2, scHero.offsetHeight - window.innerHeight);
+      var p = clamp(px / total, 0, 1), narrow = scNarrow.matches;
+      var fw = scFrameEl.offsetWidth, q = scSeg(p, narrow ? 0.22 : 0.08, 0.84), e = q * q * (1.6 - 0.6 * q), r1 = Math.round(e * (scMaxR + fw * 0.04));
+      if (r1 !== scLastR) {
+        scSun.style.setProperty("--r1", r1 + "px");
+        scRing.style.transform = "scale(" + (r1 / 70.5).toFixed(3) + ")";
+        scLastR = r1;
+      }
+      scOp(scRing, scGL ? 0 : (e > 0 && e < 1 ? Math.min(1, e * 8, (1 - e) * 5) : 0));
+      if (scGL) scGL.prog = e;
+      var th = -0.06 + 1.48 * e;
+      scScene.style.transform = "scale(" + (1 + 0.06 * scSm(p)).toFixed(4) + ")";
+
+      var io = 1 - scSm(scSeg(p, 0.12, 0.22));
+      scOp(scIntro, io); scShL.style.opacity = (io * 0.95).toFixed(3);
+      scIntro.style.transform = "translateY(" + (-(1 - io) * 28).toFixed(1) + "px)";
+      var vis = io > 0.02;
+      if (vis !== scLastVis) { scIntro.style.visibility = vis ? "visible" : "hidden"; scLastVis = vis; }
+      scOp(scMarker, (narrow ? 1 - io : 1) * (1 - scSm(scSeg(p, 0.84, 0.90))));
+
+      var shown = narrow ? 1 - io : 1, left = 0, zoom = 1 + 0.06 * scSm(p), rr = r1 * zoom * scScale();
+      for (var k = 0; k < scProbs.length; k++) {
+        /* cuando la onda del faro alcanza el problema, se convierte en su solución en lima */
+        var d = scDist[k] || 0, x = scGL ? scSm(clamp((th + 0.02 - ((scUV[k] || 0) * 0.78 + 0.21)) / 0.1, 0, 1)) : scSm(clamp((rr - d + 40) / 90, 0, 1));
+        scOp(scProbs[k], shown * (1 - scSm(scSeg(p, 0.86, 0.92))));
+        scOp(scPb[k], 1 - x); scOp(scOk[k], x);
+        scOk[k].style.transform = "scale(" + (0.92 + 0.08 * x).toFixed(3) + ")";
+        if (x < 0.5) left++;
+      }
+      var ch = scSm(scSeg(p, narrow ? 0.24 : 0.20, narrow ? 0.30 : 0.26)) * (1 - scSm(scSeg(p, 0.42, 0.50)));
+      scOp(scChap, ch); scChap.style.transform = "translateY(" + ((1 - ch) * 14).toFixed(1) + "px)";
+      scOp(scVig, 1 - 0.5 * scSm(scSeg(p, 0.74, 0.86)));
+      scOp(scClock, scSm(scSeg(p, narrow ? 0.16 : 0.04, narrow ? 0.22 : 0.12)) * (1 - scSm(scSeg(p, 0.82, 0.88))));
+      if (left !== scLastN) { $("clk").textContent = left; scLastN = left; }
+
+      var ov = scSm(scSeg(p, 0.87, 0.95));
+      scOp(scOutro, ov); scShC.style.opacity = (ov * 0.9).toFixed(3);
+      scOutro.style.transform = "translateY(calc(-50% + " + ((1 - ov) * 24).toFixed(1) + "px))";
+      scOutro.style.visibility = ov > 0.02 ? "visible" : "hidden";
+      scInk.style.opacity = scSm(scSeg(p, 0.95, 1)).toFixed(3);
+    };
+    var scRead = function () { return clamp(-scHero.getBoundingClientRect().top, 0, Math.max(0, scHero.offsetHeight - window.innerHeight)); };
+    var scFrame = function (now) {
+      scRaf = 0;
+      var dt = clamp(now - scLast, 8, 64); scLast = now;
+      var d = scTarget - scCur;
+      if (Math.abs(d) < 0.4) scCur = scTarget; else scCur += d * (1 - Math.exp(-dt / 100));
+      scRender(scCur);
+      if (scCur !== scTarget) scRaf = requestAnimationFrame(scFrame);
+    };
+    var scKick = function () {
+      scTarget = scRead();
+      if (!scRaf) { scLast = performance.now(); scRaf = requestAnimationFrame(scFrame); }
+    };
+    window.addEventListener("scroll", scKick, { passive: true });
+    window.addEventListener("resize", function () { scMeasure(); scTarget = scCur = scRead(); scRender(scCur); });
+    scMeasure();
+    scTarget = scCur = scRead();
+    scRender(scCur);
+  }
 
   /* ---------- Pestañas de servicios ---------- */
   var tabs = document.querySelectorAll('.tabs [role="tab"]');

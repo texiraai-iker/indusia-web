@@ -4,10 +4,12 @@ Web de una página de Indusia, agencia de IA del País Vasco: agentes telefónic
 
 ## Estructura
 
-- `index.html`: la página completa (hero con red animada de servicios y transformación al hacer scroll, franja de servicios en movimiento, problema, 38 servicios en 6 categorías con pestañas, demo, caso, antes y después, 32 sectores con panel (9 ideas por sector), calculadora por tipo de negocio, herramientas, cómo trabajamos, por qué nosotros, 9 preguntas, contacto, pie).
+- `index.html`: la página completa (hero cinematográfico del faro en la tormenta, franja de servicios en movimiento, problema, 38 servicios en 6 categorías con pestañas, demo, caso, antes y después, 32 sectores con panel (9 ideas por sector), calculadora por tipo de negocio, herramientas, cómo trabajamos, por qué nosotros, 9 preguntas, contacto, pie).
 - `styles.css`: todos los estilos. Los colores y espacios están como variables al principio (`:root`).
 - `main.js`: animación del hero ligada al scroll, pestañas de servicios, reproductor de demo, selector de sectores, calculadora y envío del formulario.
 - `aviso-legal.html`, `privacidad.html`, `cookies.html`: páginas legales (plantillas con huecos).
+- `img/`: fotos del hero (`faro-tormenta.webp`, `faro-sol.webp`, generadas con IA), `nubes.png` (ruido para la transición) y `grano.png` (grano de película).
+- `video/`: los dos vídeos en bucle del hero, en WebM y MP4 (`faro-tormenta`, `faro-sol`), hechos a partir de las fotos.
 - `fonts/`: Bricolage Grotesque (títulos) e Inter (texto), alojadas en la propia web.
 - `logo/`: logo en lima en SVG (vertical, horizontal, solo símbolo y con fondo) y PNG.
 - `og-image.png` (imagen al compartir en redes), `apple-touch-icon.png`, `favicon.svg`, `robots.txt`, `sitemap.xml`.
@@ -24,7 +26,7 @@ Sin framework, sin dependencias y sin paso de compilación. HTML, CSS y JavaScri
 
 - Dirección "oscuro técnico": fondo `#0A0B0F`, texto `#EDEDEA`, un único acento lima `#D7FF3A`. El logo (mapa plegado con un cable) va en lima.
 - Máximo 2 fuentes. Espaciado en múltiplos de 8px. Titulares con tracking entre -0.02 y -0.03em.
-- Un solo momento especial: el hero. Al cargar se ve el logo en el centro de una red de 12 servicios (teléfono, WhatsApp, web, reseñas, Excel, facturas…) con órbitas girando, pulsos de luz que viajan por las conexiones y avisos que aparecen (SVG con animaciones SMIL y CSS). Al hacer scroll la red se agranda y desaparece y un negocio caótico (tarjetas rojas con problemas) recibe a Indusia (ondas de choque), las tarjetas se ordenan en cuadrícula y cada una pasa a solución en lima; el contador de "cosas pendientes" baja a 0 y aparece la llamada a la acción. `main.js` calcula el progreso `p` y guarda variables CSS (`--s,--m,--c,--b,--t1..3,--o`) en `.stage`; el CSS interpola posiciones. La altura del hero es 560vh en escritorio y 520vh en móvil.
+- Un solo momento especial: el hero. Paisaje real de la costa vasca con un faro (el faro es Indusia, señalado con un marcador lima "Indusia · Encendido 24/7"). Arriba hay tormenta en vídeo (lluvia, olas contra el acantilado, relámpagos) y 6 problemas del negocio en las nubes; al hacer scroll, desde la luz del faro las nubes se deshacen (mezcla de los dos vídeos con WebGL, borde irregular, rayos de sol), cada problema se convierte en su solución en lima, el contador baja a 0 y aparece "Se acabó la tormenta." con la llamada a la acción. Si no hay WebGL, el sol se abre en un círculo con anillo lima. Todo en `main.js` (bloque "Hero cinematográfico", variables con prefijo `sc`). Altura del hero: 820vh en escritorio y 720vh en móvil. Excepción a "sin degradados": el hero usa sombras con degradado para que el texto se lea sobre la foto.
 - Movimiento al hacer scroll en toda la página (`main.js`, bloque "Movimiento al hacer scroll"; estilos `.motion .rv…`): títulos que suben palabra a palabra, bloques que entran desde abajo o los lados con escalonado, textos grandes que se iluminan palabra a palabra, líneas de los pasos que se dibujan, calculadora que vuelve a contar, franja que acelera e inclina con la velocidad del scroll, cabeceras con parallax suave y barra de progreso lima bajo la cabecera. Se repite cada vez que bajas.
 - Con `prefers-reduced-motion` o sin JavaScript, el hero se muestra estático (sin la clase `is-live`) y no hay animaciones de scroll.
 - Lo demás es deliberadamente sobrio: sin tarjetas iguales, sin degradados, sin textos en mayúsculas, sin etiquetas sobre los títulos.
