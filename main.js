@@ -293,8 +293,14 @@
       pills.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-i") === String(key) ? "true" : "false"); });
       sp.classList.remove("swap"); void sp.offsetWidth; if (!reduce) sp.classList.add("swap");
       if (setCalc) setCalc(key);
-      // En móvil el panel queda debajo de la lista: lo acercamos
-      if (fromClick && window.innerWidth < 1000) sp.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      // En móvil los sectores van en una fila deslizable: centramos el elegido en la fila
+      if (fromClick && window.innerWidth < 900) {
+        pills.forEach(function (b) {
+          if (b.getAttribute("data-i") !== String(key)) return;
+          var row = b.closest(".pills"), li = b.parentNode;
+          row.scrollTo({ left: li.offsetLeft - (row.clientWidth - li.offsetWidth) / 2, behavior: reduce ? "auto" : "smooth" });
+        });
+      } else if (fromClick && window.innerWidth < 1000) sp.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     };
     pills.forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-i"), true); }); });
     $("sp-cta").addEventListener("click", function () {
@@ -556,4 +562,10 @@
       }).then(function () { btn.disabled = false; });
     });
   }
+
+  /* ---------- Botón flotante de WhatsApp: aparece al pasar el inicio ---------- */
+  var fab = document.querySelector(".wa-fab"), heroEl = document.querySelector(".hero");
+  if (fab && heroEl && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { fab.classList.toggle("show", !es[0].isIntersecting); }).observe(heroEl);
+  } else if (fab) fab.classList.add("show");
 })();

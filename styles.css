@@ -154,7 +154,7 @@ section{scroll-margin-top:72px}
 .hero.is-live .layer{will-change:opacity;overflow:hidden}
 
 @media(max-width:899px){
-  .hero.is-live{height:720vh;padding-block:0}
+  .hero.is-live{height:540vh;padding-block:0}
   .hero .wrap{align-items:flex-start}
   .intro{padding-top:var(--s5)}
   .hero h1{font-size:clamp(2.5rem,11.5vw,3.5rem)}
@@ -437,3 +437,21 @@ main,.foot{overflow-x:clip}
 .gl-scene{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hero.gl .ring{display:none}
 .hero.gl .l-sun{clip-path:none!important}
+
+/* ---------- Móvil ---------- */
+/* botón flotante de WhatsApp (en lima, el único acento de la web) */
+.wa-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--lime);color:var(--lime-ink);box-shadow:0 8px 24px rgba(0,0,0,.45);opacity:0;transform:translateY(16px) scale(.9);pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease)}
+.wa-fab svg{width:28px;height:28px}
+.wa-fab.show{opacity:1;transform:none;pointer-events:auto}
+.wa-fab:active{transform:scale(.94)}
+.wa-fab:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+@media(max-width:899px){
+  /* menos aire entre secciones */
+  .pad{padding-block:var(--s8)}
+  .sec-head{margin-bottom:var(--s5)}
+  /* sectores en una fila que se desliza con el dedo */
+  .pills{flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;margin-inline:calc(-1 * var(--gut));padding:4px var(--gut) 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .pills::-webkit-scrollbar{display:none}
+  .pills li{flex:none;scroll-snap-align:center}
+  .pills button{white-space:nowrap}
+}
