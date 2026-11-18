@@ -23,7 +23,7 @@
 @media(min-width:1100px){:root{--gut:48px}}
 
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scrollbar-color:var(--line-2) var(--ink);scrollbar-width:thin}
+html{-webkit-text-size-adjust:100%;scrollbar-color:var(--line-2) var(--ink);scrollbar-width:thin}
 body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--body);font-size:1.0625rem;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 ::selection{background:var(--lime);color:var(--lime-ink)}
 ::-webkit-scrollbar{width:10px}::-webkit-scrollbar-track{background:var(--ink)}::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:5px}
@@ -49,12 +49,15 @@ section{scroll-margin-top:72px}
 .sec-head p{margin-top:var(--s3);color:var(--mute);max-width:60ch;font-size:1.125rem}
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 var(--s3);border-radius:10px;font:600 1rem/1 var(--body);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .18s var(--ease),background-color .18s,border-color .18s,color .18s}
-.btn:active{transform:scale(.98)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 var(--s3);border-radius:10px;font:600 1rem/1 var(--body);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .35s var(--ease),background-color .25s,border-color .25s,color .25s,box-shadow .35s var(--ease)}
+.btn:active{transform:scale(.97);transition-duration:.1s}
 .btn-primary{background:var(--lime);color:var(--lime-ink)}
-.btn-primary:hover{background:#E4FF6B}
 .btn-ghost{border-color:var(--line-2);color:var(--paper)}
-.btn-ghost:hover{border-color:var(--paper)}
+@media(hover:hover){
+  .btn-primary:hover{background:#E4FF6B;transform:translateY(-2px);box-shadow:0 10px 28px -10px rgba(215,255,58,.55)}
+  .btn-ghost:hover{border-color:var(--paper);background:rgba(237,237,234,.06);transform:translateY(-2px)}
+  .btn:active{transform:scale(.97)}
+}
 .btn-sm{min-height:40px;padding:0 var(--s2);font-size:.9375rem}
 
 /* header */
@@ -115,13 +118,13 @@ section{scroll-margin-top:72px}
   .hero .lead{font-size:1.0625rem;margin-top:var(--s2)}
   .hero .cta-row{margin-top:var(--s3)}
 }
-.clock{position:absolute;right:0;top:calc(9% + 16px);z-index:3;margin:0;text-align:right;display:grid;gap:4px;justify-items:end;opacity:0}
+.clock{pointer-events:none;position:absolute;right:0;top:calc(9% + 16px);z-index:3;margin:0;text-align:right;display:grid;gap:4px;justify-items:end;opacity:0}
 .clock b{font:700 clamp(2.25rem,4vw,3.25rem)/1 var(--display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .clock .st{font-size:.9375rem;color:var(--paper)}
 .clock .ix{display:inline-flex;align-items:center;gap:8px;color:var(--lime);font-weight:600;font-size:.9375rem}
 .clock .ix::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--lime);animation:pulse 2s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.35}}
-.probs{list-style:none;margin:0;padding:0}
+.probs{list-style:none;margin:0;padding:0;pointer-events:none}
 .prob{position:absolute;z-index:3;display:grid;white-space:nowrap;opacity:0}
 .prob>span{grid-area:1/1;padding:8px 14px;border-radius:10px;font-size:.9375rem}
 /* el problema forma parte de la tormenta: gris, en la nube; los relámpagos lo iluminan */
@@ -130,7 +133,7 @@ section{scroll-margin-top:72px}
 /* la solución, en lima, cuando la luz del faro lo alcanza */
 .ok{color:var(--ink);background:var(--lime);font-weight:600;opacity:0;transform:scale(.92)}
 .ok i{font-style:normal}
-.chap{position:absolute;left:0;right:0;bottom:14%;z-index:3;margin:0;text-align:center;font:600 clamp(1.25rem,2.4vw,1.75rem)/1.2 var(--display);letter-spacing:-.02em;color:var(--paper);opacity:0}
+.chap{pointer-events:none;position:absolute;left:0;right:0;bottom:14%;z-index:3;margin:0;text-align:center;font:600 clamp(1.25rem,2.4vw,1.75rem)/1.2 var(--display);letter-spacing:-.02em;color:var(--paper);opacity:0}
 .chap b{color:var(--lime)}
 /* cine: viñeta, grano y bandas negras */
 .vig,.grain,.bar{position:absolute;pointer-events:none}
@@ -197,7 +200,7 @@ section{scroll-margin-top:72px}
 .svc summary::-webkit-details-marker{display:none}
 .svc .nm{font:600 clamp(1.375rem,2.8vw,2rem)/1.1 var(--display);letter-spacing:-.02em;grid-column:1}
 .svc .rs{color:var(--mute);font-size:1rem;grid-column:1}
-.svc .pl{grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:end;width:32px;height:32px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;transition:transform .25s var(--ease),background-color .2s,border-color .2s}
+.svc .pl{grid-column:2;grid-row:1 / span 2;align-self:center;justify-self:end;width:32px;height:32px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;transition:transform .45s var(--ease),background-color .3s,border-color .3s,color .3s}
 .svc .pl svg{width:14px;height:14px}
 .svc details[open] .pl{transform:rotate(45deg);background:var(--lime);border-color:var(--lime);color:var(--lime-ink)}
 .svc summary:hover .nm{color:var(--lime)}
@@ -264,7 +267,7 @@ section{scroll-margin-top:72px}
 .faq details{border-bottom:1px solid var(--line)}
 .faq summary{list-style:none;cursor:pointer;padding:var(--s3) 0;display:flex;align-items:center;justify-content:space-between;gap:var(--s3);font:600 clamp(1.125rem,2vw,1.375rem)/1.25 var(--display);letter-spacing:-.01em}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary svg{flex:none;width:14px;height:14px;transition:transform .25s var(--ease)}
+.faq summary svg{flex:none;width:14px;height:14px;transition:transform .45s var(--ease),color .3s}
 .faq details[open] summary svg{transform:rotate(45deg);color:var(--lime)}
 .faq summary:hover{color:var(--lime)}
 .faq p{padding:0 0 var(--s3);color:#C9C9C4;max-width:60ch}
@@ -401,7 +404,8 @@ form .btn{width:100%}
 /* pestañas de servicios */
 .tabs{display:none}
 .has-tabs .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:var(--s4)}
-.tabs button{font:500 .9375rem/1 var(--body);min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--paper);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background-color .15s,border-color .15s,color .15s}
+.tabs button{font:500 .9375rem/1 var(--body);min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--paper);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background-color .3s,border-color .3s,color .3s,transform .35s var(--ease)}
+.tabs button:active{transform:scale(.96);transition-duration:.1s}
 .tabs button span{font-size:.8125rem;color:var(--mute);font-variant-numeric:tabular-nums}
 .tabs button:hover{border-color:var(--paper)}
 .tabs button[aria-selected=true]{background:var(--lime);border-color:var(--lime);color:var(--lime-ink)}
@@ -463,3 +467,10 @@ main,.foot{overflow-x:clip}
   .pills li{flex:none;scroll-snap-align:center}
   .pills button{white-space:nowrap}
 }
+
+/* desplegables: al cerrar, el + vuelve a su sitio desde el primer momento */
+.svc details.closing .pl{transform:none;background:transparent;border-color:var(--line-2);color:inherit}
+.faq details.closing summary svg{transform:none;color:inherit}
+.faq summary,.svc summary{-webkit-tap-highlight-color:transparent}
+/* velo del salto entre secciones lejanas (por debajo de la cabecera) */
+.jump-veil{position:fixed;inset:0;z-index:45;background:var(--ink);opacity:0;pointer-events:none}

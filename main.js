@@ -256,7 +256,7 @@
   var tabs = document.querySelectorAll('.tabs [role="tab"]');
   if (tabs.length) {
     document.documentElement.classList.add("has-tabs");
-    var pick = function (t, focus) {
+    var pick = function (t, focus, anim) {
       tabs.forEach(function (b) {
         var on = b === t;
         b.setAttribute("aria-selected", on ? "true" : "false");
@@ -264,12 +264,19 @@
         $(b.getAttribute("aria-controls")).hidden = !on;
       });
       if (focus) t.focus();
+      /* el panel nuevo entra subiendo y sus servicios aparecen uno detrás de otro */
+      var panel = $(t.getAttribute("aria-controls"));
+      if (anim && !reduce && panel.animate) {
+        panel.querySelectorAll("details").forEach(function (d, i) {
+          d.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: Math.min(i, 8) * 40, easing: "cubic-bezier(.22,1,.36,1)", fill: "backwards" });
+        });
+      }
     };
     tabs.forEach(function (b, i) {
-      b.addEventListener("click", function () { pick(b, false); });
+      b.addEventListener("click", function () { if (b.getAttribute("aria-selected") !== "true") pick(b, false, true); });
       b.addEventListener("keydown", function (e) {
         var k = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-        if (k) { e.preventDefault(); pick(tabs[(i + k + tabs.length) % tabs.length], true); }
+        if (k) { e.preventDefault(); pick(tabs[(i + k + tabs.length) % tabs.length], true, true); }
       });
     });
     pick(tabs[0], false);
@@ -568,6 +575,89 @@
       }).then(function () { btn.disabled = false; });
     });
   }
+
+
+  /* ---------- Desplegables (+) que se abren y cierran con suavidad ----------
+     Servicios y preguntas: la altura, el texto y el + giran a la vez. Solo uno abierto por grupo. */
+  var EASE_OUT = "cubic-bezier(.22,1,.36,1)";
+  var accs = document.querySelectorAll(".svc details, .faq details");
+  accs.forEach(function (d) { var g = d.getAttribute("name"); if (g) { d.setAttribute("data-group", g); d.removeAttribute("name"); } });
+  var accBody = function (d) { return d.querySelector("summary").nextElementSibling; };
+  var accAnim = function (d, open) {
+    var b = accBody(d);
+    if (d._a) { d._a.cancel(); d._a = null; }
+    if (!b || reduce || !b.animate) { d.open = open; d.classList.remove("closing"); return; }
+    var cs, h;
+    if (open) {
+      d.classList.remove("closing"); d.open = true;
+      cs = getComputedStyle(b); h = b.offsetHeight;
+      b.style.overflow = "hidden";
+      d._a = b.animate([
+        { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0, transform: "translateY(-8px)" },
+        { height: h + "px", paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, opacity: 1, transform: "none" }
+      ], { duration: 460, easing: EASE_OUT });
+    } else {
+      cs = getComputedStyle(b); h = b.offsetHeight;
+      d.classList.add("closing"); b.style.overflow = "hidden";
+      d._a = b.animate([
+        { height: h + "px", paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, opacity: 1 },
+        { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 }
+      ], { duration: 340, easing: EASE_OUT });
+    }
+    var a = d._a;
+    a.onfinish = function () { if (!open) { d.open = false; d.classList.remove("closing"); } b.style.overflow = ""; d._a = null; };
+  };
+  accs.forEach(function (d) {
+    d.querySelector("summary").addEventListener("click", function (e) {
+      e.preventDefault();
+      var opening = !d.open || d.classList.contains("closing"), g = d.getAttribute("data-group");
+      if (opening && g) accs.forEach(function (o) { if (o !== d && o.getAttribute("data-group") === g && o.open && !o.classList.contains("closing")) accAnim(o, false); });
+      accAnim(d, opening);
+    });
+  });
+
+  /* ---------- Saltos suaves al pulsar enlaces del menú y botones (#seccion) ----------
+     Cerca: desplazamiento suave con aceleración y frenada. Lejos: fundido rápido y la sección entra subiendo,
+     en vez de cruzar toda la página de golpe. */
+  var jumpVeil = document.createElement("div"); jumpVeil.className = "jump-veil"; jumpVeil.setAttribute("aria-hidden", "true");
+  document.body.appendChild(jumpVeil);
+  var scrollRaf = 0, stopScroll = function () { if (scrollRaf) { cancelAnimationFrame(scrollRaf); scrollRaf = 0; } };
+  ["wheel", "touchstart", "keydown"].forEach(function (ev) { window.addEventListener(ev, stopScroll, { passive: true }); });
+  var goTo = function (t, id) {
+    var off = parseFloat(getComputedStyle(t).scrollMarginTop) || 72;
+    var to = Math.max(0, t.getBoundingClientRect().top + window.scrollY - off), from = window.scrollY, dist = Math.abs(to - from);
+    var done = function () {
+      if (history.pushState) history.pushState(null, "", "#" + id);
+      if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
+      t.focus({ preventScroll: true });
+    };
+    stopScroll();
+    if (reduce) { window.scrollTo({ top: to, behavior: "instant" }); done(); return; }
+    if (dist > window.innerHeight * 2.5 && jumpVeil.animate) {
+      jumpVeil.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: "ease-in", fill: "forwards" }).onfinish = function () {
+        window.scrollTo({ top: to, behavior: "instant" });
+        jumpVeil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: "ease-out", fill: "forwards" });
+        if (t.animate) t.animate([{ opacity: 0.4, transform: "translateY(28px)" }, { opacity: 1, transform: "none" }], { duration: 560, easing: EASE_OUT });
+        done();
+      };
+      return;
+    }
+    var dur = Math.min(950, Math.max(450, dist * 0.55)), t0 = performance.now();
+    var step = function (now) {
+      var k = Math.min(1, (now - t0) / dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      window.scrollTo({ top: from + (to - from) * e, behavior: "instant" });
+      if (k < 1) scrollRaf = requestAnimationFrame(step); else { scrollRaf = 0; done(); }
+    };
+    scrollRaf = requestAnimationFrame(step);
+  };
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute("href").slice(1), t = id && document.getElementById(id);
+    if (!t) return;
+    e.preventDefault(); goTo(t, id);
+  });
 
   /* ---------- Botón flotante de WhatsApp: aparece al pasar el inicio ---------- */
   var fab = document.querySelector(".wa-fab"), heroEl = document.querySelector(".hero");
